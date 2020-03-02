@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="Spectrometer.ValueControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Spectrometer"
+             xmlns:xctk="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Margin="2" Grid.Row="0" Grid.Column="0" Text="ValueName" VerticalAlignment="Center"
+                        Foreground="{DynamicResource Brush_Foreground}"/>
+
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <xctk:DoubleUpDown MinWidth="90" Margin="2" VerticalAlignment="Center"
+                                   Style="{DynamicResource NUD_Style}"/>
+                <TextBlock Text="нм" Margin="2" VerticalAlignment="Center" Foreground="{DynamicResource Brush_Foreground}"/>
+            </StackPanel>
+        </Grid>
+
+        <Slider Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"
+                Style="{DynamicResource SliderStyle}"/>
+
+        <UniformGrid Columns="3" Grid.Row="2" Grid.Column="2">
+            <TextBlock Text="min" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center"
+                        Foreground="{DynamicResource Brush_Foreground}"/>
+            <ToggleButton Content="Auto" Margin="2" Width="70"/>
+            <TextBlock Text="max" HorizontalAlignment="Right" Margin="2" VerticalAlignment="Center"
+                        Foreground="{DynamicResource Brush_Foreground}"/>
+        </UniformGrid>
+    </Grid>
+</UserControl>
