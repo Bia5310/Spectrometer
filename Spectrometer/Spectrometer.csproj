@@ -79,6 +79,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MainWindow2.cs" />
     <Compile Include="NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
@@ -141,6 +142,10 @@
     <ProjectReference Include="..\AO_Lib\AO_Lib.csproj">
       <Project>{1eb39a18-8a1c-4c19-af0b-39809ad6606f}</Project>
       <Name>AO_Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VimbaCamera\VimbaCamera.csproj">
+      <Project>{b8e883a2-98ef-497e-919d-05fe4af23f3f}</Project>
+      <Name>VimbaCamera</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
