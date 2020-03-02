@@ -11,7 +11,7 @@
         AllowsTransparency="False"
         BorderBrush="Red"
         mc:Ignorable="d"
-        Title="MainWindow" Height="950" Width="1250" Background="{DynamicResource Brush_BackDark}">
+        Title="MainWindow" Height="1050" Width="1250" Background="{DynamicResource Brush_BackDark}">
     <Window.Resources>
         <Style TargetType="ScrollBar">
             <Setter Property="Width" Value="8"/>
@@ -153,6 +153,16 @@
                                         <CheckBox Content="Усилением" Margin="4" Foreground="{DynamicResource Brush_Foreground}" VerticalAlignment="Center"
                                                    VerticalContentAlignment="Center"/>
                                     </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="2">
+                                        <TextBlock Text="Макс. экспозиция" Margin="2"/>
+                                        <xctk:DoubleUpDown MinWidth="80" Margin="2" Style="{DynamicResource NUD_Style}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="2">
+                                        <TextBlock Text="Макс. усиление" Margin="2"/>
+                                        <xctk:DoubleUpDown MinWidth="80" Margin="2" Style="{DynamicResource NUD_Style}"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </TabItem>
                             <TabItem Header="Свип">
@@ -197,10 +207,10 @@
                                         <Slider Grid.Row="3" Grid.Column="1" Margin="2" IsEnabled="False" x:Name="sliderAttenuation" ValueChanged="SliderAttenuation_ValueChanged"
                                             Maximum="2500" Minimum="1700" Value="2500" Style="{DynamicResource SliderStyle}"/>
                                         
-                                        <TextBlock Text="λ, нм:" Grid.Row="0" Grid.Column="0" Margin="2"/>
-                                        <TextBlock Text="1/λ , см⁻¹:" Grid.Row="1" Grid.Column="0" Margin="2"/>
-                                        <TextBlock Text="f, Hz:" Grid.Row="2" Grid.Column="0" Margin="2"/>
-                                        <TextBlock Text="Ослабл. K:" Grid.Row="3" Grid.Column="0" Margin="2"/>
+                                        <TextBlock Text="λ, нм:" Grid.Row="0" Grid.Column="0" Margin="2" FontSize="13" VerticalAlignment="Center"/>
+                                        <TextBlock Text="1/λ , см⁻¹:" Grid.Row="1" Grid.Column="0" Margin="2" FontSize="13" VerticalAlignment="Center"/>
+                                        <TextBlock Text="f, Hz:" Grid.Row="2" Grid.Column="0" Margin="2" FontSize="13" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Ослабл. K:" Grid.Row="3" Grid.Column="0" Margin="2" FontSize="13" VerticalAlignment="Center"/>
                                         <TextBox Grid.Row="0" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxWavelength" TextChanged="TextBoxWavelength_TextChanged"
                                      KeyDown="TextBoxWavelength_KeyDown"/>
                                         <TextBox Grid.Row="1" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxWavenumber" TextChanged="TextBoxWavenumber_TextChanged"
@@ -219,9 +229,9 @@
                         <Border Margin="0 4 0 4" CornerRadius="3" BorderThickness="0" Background="{DynamicResource Brush_BackLight}">
                             <Expander Header="Камера" Style="{DynamicResource ExpanderStyle}" IsExpanded="True" Padding="2">
                                 <StackPanel>
-                                    <local:ValueControl Margin="2"/>
-                                    <local:ValueControl Margin="2"/>
-                                    <local:ValueControl Margin="2"/>
+                                    <local:ValueControl Margin="2" FeatureName="Exposure" MinValue="1" AutoVisibility="Visible" IsAuto="True" IsLogarithm="True"/>
+                                    <local:ValueControl Margin="2" FeatureName="Gain" AutoVisibility="Visible"/>
+                                    <local:ValueControl Margin="2" FeatureName="Gamma" AutoVisibility="Visible"/>
                                 </StackPanel>
                             </Expander>
                         </Border>
