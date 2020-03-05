@@ -102,8 +102,7 @@ namespace Spectrometer
             set
             {
                SetValue(ValueProperty, Math.Round(value/Increment)*Increment);
-            } 
-
+            }
         }
 
         public double Increment
