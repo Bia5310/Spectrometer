@@ -336,7 +336,7 @@ namespace Spectrometer
 
         private void SubscribeEvents()
         {
-            if (subscrided)
+            /*if (subscrided)
                 return;
 
             subscrided = true;
@@ -377,7 +377,7 @@ namespace Spectrometer
                 vimbaCamera.BinningY.OnFeatureChanged += FeatureChanged;
             }
             if (vimbaCamera.StatFrameRate.IsAvailable)
-                vimbaCamera.StatFrameRate.OnFeatureChanged += FeatureChanged;
+                vimbaCamera.StatFrameRate.OnFeatureChanged += FeatureChanged;*/
         }
 
         private void UnsubscribeEvents()
@@ -428,9 +428,9 @@ namespace Spectrometer
 
         private void FeatureChanged(VimbaCamera.FeatureType featureType)
         {
-            /*if (InvokeRequired)
+            if (!Dispatcher.CheckAccess())
             {
-                BeginInvoke(new VimbaCamera.CameraFeature.OnFeatureChangedHandler(FeatureChanged), featureType);
+                Dispatcher.BeginInvoke(new VimbaCamera.CameraFeature.OnFeatureChangedHandler(FeatureChanged), featureType);
                 return;
             }
             else
@@ -438,41 +438,63 @@ namespace Spectrometer
                 switch (featureType)
                 {
                     case VimbaCamera.FeatureType.Exposure:
-                        trackBarAdvancedExposure.SetValueMinMax(vimbaCamera.Exposure.Value, vimbaCamera.Exposure.MinValue, vimbaCamera.Exposure.MaxValue);
+                        //trackBarAdvancedExposure.SetValueMinMax(vimbaCamera.Exposure.Value, vimbaCamera.Exposure.MinValue, vimbaCamera.Exposure.MaxValue);
+                        ExposureControl.MinValue = vimbaCamera.Exposure.MinValue;
+                        ExposureControl.MaxValue = vimbaCamera.Exposure.MaxValue;
+                        ExposureControl.Value = vimbaCamera.Exposure.Value;
                         break;
                     case VimbaCamera.FeatureType.Gain:
-                        trackBarAdvancedGain.SetValueMinMax(vimbaCamera.Gain.Value, vimbaCamera.Gain.MinValue, vimbaCamera.Gain.MaxValue);
+                        //trackBarAdvancedGain.SetValueMinMax(vimbaCamera.Gain.Value, vimbaCamera.Gain.MinValue, vimbaCamera.Gain.MaxValue);
+                        GainControl.MinValue = vimbaCamera.Gain.MinValue;
+                        GainControl.MaxValue = vimbaCamera.Gain.MaxValue;
+                        GainControl.Value = vimbaCamera.Gain.Value;
                         break;
                     case VimbaCamera.FeatureType.Gamma:
-                        trackBarAdvancedGamma.SetValueMinMax(vimbaCamera.Gamma.Value, vimbaCamera.Gamma.MinValue, vimbaCamera.Gamma.MaxValue);
+                        //trackBarAdvancedGamma.SetValueMinMax(vimbaCamera.Gamma.Value, vimbaCamera.Gamma.MinValue, vimbaCamera.Gamma.MaxValue);
+                        GammaControl.MinValue = vimbaCamera.Gamma.MinValue;
+                        GammaControl.MaxValue = vimbaCamera.Gamma.MaxValue;
+                        GammaControl.Value = vimbaCamera.Gamma.Value;
                         break;
                     case VimbaCamera.FeatureType.Width:
-                        trackBarAdvancedWidth.SetValueMinMax(vimbaCamera.Width.Value, vimbaCamera.Width.MinValue, vimbaCamera.Width.MaxValue);
-                        trackBarAdvancedWidth.Enabled = !vimbaCamera.Width.IsReadonly;
+                        //trackBarAdvancedWidth.SetValueMinMax(vimbaCamera.Width.Value, vimbaCamera.Width.MinValue, vimbaCamera.Width.MaxValue);
+                        ROI_Control.ROIWidth = vimbaCamera.Width.Value;
+                        ROI_Control.ROIWidthMin = vimbaCamera.Width.MinValue;
+                        ROI_Control.ROIWidthMax = vimbaCamera.Width.MaxValue;
+                        //trackBarAdvancedWidth.Enabled = !vimbaCamera.Width.IsReadonly;
                         break;
                     case VimbaCamera.FeatureType.Height:
-                        trackBarAdvancedHeight.SetValueMinMax(vimbaCamera.Height.Value, vimbaCamera.Height.MinValue, vimbaCamera.Height.MaxValue);
-                        trackBarAdvancedHeight.Enabled = !vimbaCamera.Height.IsReadonly;
+                        //trackBarAdvancedHeight.SetValueMinMax(vimbaCamera.Height.Value, vimbaCamera.Height.MinValue, vimbaCamera.Height.MaxValue);
+                        ROI_Control.ROIHeight = vimbaCamera.Height.Value;
+                        ROI_Control.ROIHeightMin = vimbaCamera.Height.MinValue;
+                        ROI_Control.ROIHeightMax = vimbaCamera.Height.MaxValue;
+                        //trackBarAdvancedHeight.Enabled = !vimbaCamera.Height.IsReadonly;
                         break;
                     case VimbaCamera.FeatureType.OffsetX:
-                        trackBarAdvancedOffsetX.SetValueMinMax(vimbaCamera.OffsetX.Value, vimbaCamera.OffsetX.MinValue, vimbaCamera.OffsetX.MaxValue);
-                        trackBarAdvancedOffsetX.Enabled = !vimbaCamera.OffsetX.IsReadonly;
+                        //trackBarAdvancedOffsetX.SetValueMinMax(vimbaCamera.OffsetX.Value, vimbaCamera.OffsetX.MinValue, vimbaCamera.OffsetX.MaxValue);
+                        ROI_Control.ROIOffsetX = vimbaCamera.OffsetX.Value;
+                        ROI_Control.ROIOffsetXMin = vimbaCamera.OffsetX.MinValue;
+                        ROI_Control.ROIOffsetXMax = vimbaCamera.OffsetX.MaxValue;
+                        //trackBarAdvancedOffsetX.Enabled = !vimbaCamera.OffsetX.IsReadonly;
                         break;
                     case VimbaCamera.FeatureType.OffsetY:
-                        trackBarAdvancedOffsetY.SetValueMinMax(vimbaCamera.OffsetY.Value, vimbaCamera.OffsetY.MinValue, vimbaCamera.OffsetY.MaxValue);
-                        trackBarAdvancedOffsetY.Enabled = !vimbaCamera.OffsetY.IsReadonly;
+                        //trackBarAdvancedOffsetY.SetValueMinMax(vimbaCamera.OffsetY.Value, vimbaCamera.OffsetY.MinValue, vimbaCamera.OffsetY.MaxValue);
+                        ROI_Control.ROIOffsetY = vimbaCamera.OffsetY.Value;
+                        ROI_Control.ROIOffsetYMin = vimbaCamera.OffsetY.MinValue;
+                        ROI_Control.ROIOffsetYMax = vimbaCamera.OffsetY.MaxValue;
+                        //trackBarAdvancedOffsetY.Enabled = !vimbaCamera.OffsetY.IsReadonly;
                         break;
                     case VimbaCamera.FeatureType.BinningX:
-                        trackBarAdvancedBinningX.SetValueMinMax(vimbaCamera.BinningX.Value, vimbaCamera.BinningX.MinValue, vimbaCamera.BinningX.MaxValue);
+                        //trackBarAdvancedBinningX.SetValueMinMax(vimbaCamera.BinningX.Value, vimbaCamera.BinningX.MinValue, vimbaCamera.BinningX.MaxValue);
+
                         break;
                     case VimbaCamera.FeatureType.BinningY:
-                        trackBarAdvancedBinningY.SetValueMinMax(vimbaCamera.BinningY.Value, vimbaCamera.BinningY.MinValue, vimbaCamera.BinningY.MaxValue);
+                        //trackBarAdvancedBinningY.SetValueMinMax(vimbaCamera.BinningY.Value, vimbaCamera.BinningY.MinValue, vimbaCamera.BinningY.MaxValue);
                         break;
                     case VimbaCamera.FeatureType.FrameRate:
-                        toolStripLabelFrameRate.Text = "Frame Rate: " + vimbaCamera.StatFrameRate.Value.ToString("F3");
+                        //toolStripLabelFrameRate.Text = "Frame Rate: " + vimbaCamera.StatFrameRate.Value.ToString("F3");
                         break;
                 }
-            }*/
+            }
         }
 
         private void CameraControlsGroup(bool active)
@@ -481,6 +503,8 @@ namespace Spectrometer
             setupROIToolStripMenuItem.Enabled = active;
             restoreROIToolStripMenuItem.Enabled = active;*/
         }
+
+        
 
         /// <summary>
         /// Обработчик события приема кадра
@@ -492,17 +516,48 @@ namespace Spectrometer
             {
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    if(viewportControl1.WriteableBitmap == null || (viewportControl1.WriteableBitmap.Width != frame.Width &&
-                        viewportControl1.WriteableBitmap.Height != frame.Height))
-                    {
-                        viewportControl1.WriteableBitmap = new System.Windows.Media.Imaging.WriteableBitmap(
-                            (int)frame.Width, (int)frame.Height, 96, 96, PixelFormats.Bgr32, null);
-                    }
-                    //viewportControl1.Image
-                    viewportControl1.WriteableBitmap.WritePixels(new Int32Rect(0, 0, (int)frame.Width, (int)frame.Height),
-                        frame.Buffer, 8, 0);
+                    Camera_FrameReceived(vCamera, frame);
                 }));
+                return;
             }
+            else
+            {
+                if (viewportControl1.Image == null || (viewportControl1.Image.Width != frame.Width &&
+                        viewportControl1.Image.Height != frame.Height))
+                {
+                    //viewportControl1.WriteableBitmap = null;//image.Source = null;
+                    viewportControl1.Image = new System.Windows.Media.Imaging.WriteableBitmap(
+                        (int)frame.Width, (int)frame.Height, 96, 96, PixelFormats.Bgr32, null);
+                }
+
+                try
+                {
+                    viewportControl1.Image.Lock();
+
+                    unsafe
+                    {
+                        IntPtr intPtr = viewportControl1.Image.BackBuffer;
+                        byte* dest = (byte*)intPtr;
+                        byte value = (byte)(DateTime.Now.Second * 4.22d);
+
+                        for (int i = 0; i < frame.BufferSize; i += 2)
+                        {
+                            value = (byte) (BitConverter.ToInt16(frame.Buffer, i)*255/4095);
+                            dest[0] = dest[1] = dest[2] = value;
+                            dest += 4;
+                        }
+                    }
+                    viewportControl1.Image.AddDirtyRect(new Int32Rect(0, 0, (int)frame.Width, (int)frame.Height));
+                }
+                catch (Exception) { }
+                finally
+                {
+                    viewportControl1.Image.Unlock();
+                }
+                //viewportControl1.Image
+                //viewportControl1.WriteableBitmap.WritePixels(new Int32Rect(0,0,(int)frame.Width,(int)frame.Height), frame.Buffer, (int)frame.Width*2, 0);
+            }
+            vCamera.Camera.QueueFrame(frame);
 
             /*try
             {

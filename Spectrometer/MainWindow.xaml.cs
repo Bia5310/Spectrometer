@@ -476,12 +476,12 @@ namespace Spectrometer
         {
             if(e.Delta > 0)
             {
-                if(viewportControl1.Zoom < 100.5)
+                if(viewportControl1.Zoom <= 100.5)
                     viewportControl1.Zoom += 0.5;
             }
             else
             {
-                if (viewportControl1.Zoom > 1.5)
+                if (viewportControl1.Zoom >= 1.5)
                     viewportControl1.Zoom -= 0.5;
             }
         }

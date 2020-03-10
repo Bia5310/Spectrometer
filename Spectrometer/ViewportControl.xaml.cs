@@ -81,6 +81,12 @@ namespace Spectrometer
             set => SetValue(ImageHeightProperty, value);
         }
 
+        public WriteableBitmap Image
+        {
+            get => (WriteableBitmap)GetValue(ImageProperty);
+            set => SetValue(ImageProperty, value);
+        }
+
         public void DrawImage(Bitmap bitmap)
         {
             
@@ -123,7 +129,7 @@ namespace Spectrometer
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnScrollXChanged));
             ScrollYProperty = DependencyProperty.Register("ScrollY", typeof(double), typeof(ViewportControl), new FrameworkPropertyMetadata(0d,
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnScrollYChanged));
-            ImageProperty = DependencyProperty.Register("Image", typeof(WriteableBitmap), typeof(ViewportControl), new FrameworkPropertyMetadata(null,
+            ImageProperty = DependencyProperty.Register("Image", typeof(WriteableBitmap), typeof(ViewportControl), new FrameworkPropertyMetadata(new WriteableBitmap(1,1,96,96,PixelFormats.Bgr32, null),
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnImageChanged));
 
             ImagePositionXProperty = DependencyProperty.Register("ImagePositionX", typeof(double), typeof(ViewportControl), new FrameworkPropertyMetadata(0d,

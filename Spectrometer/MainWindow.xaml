@@ -12,7 +12,7 @@
         BorderBrush="Red"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Title="MainWindow" Height="1050" Width="1250" Background="{DynamicResource Brush_BackDark}">
+        Title="MainWindow" Height="1180" Width="1250" Background="{DynamicResource Brush_BackDark}">
     <Window.Resources>
         <Style TargetType="ScrollBar">
             <Setter Property="Width" Value="8"/>
@@ -236,10 +236,15 @@
                         <Border Margin="0 4 0 4" CornerRadius="3" BorderThickness="0" Background="{DynamicResource Brush_BackLight}">
                             <Expander Header="Камера" Style="{DynamicResource ExpanderStyle}" IsExpanded="True" Padding="2">
                                 <StackPanel>
-                                    <local:ValueControl Margin="2" FeatureName="Exposure" MinValue="1" AutoVisibility="Visible" IsAuto="True" IsLogarithm="True" Value="1"
+                                    <local:ValueControl x:Name="ExposureControl" Margin="2" FeatureName="Exposure" MinValue="1" AutoVisibility="Visible" IsAuto="True" IsLogarithm="True" Value="1"
                                                         MaxValue="1000000" ValueChanged="ValueControl_ValueChanged"/>
-                                    <local:ValueControl Margin="2" FeatureName="Gain" AutoVisibility="Visible"/>
-                                    <local:ValueControl Margin="2" FeatureName="Gamma" AutoVisibility="Visible"/>
+                                    <local:ValueControl x:Name="GainControl" Margin="2" FeatureName="Gain" AutoVisibility="Visible"/>
+                                    <local:ValueControl x:Name="GammaControl" Margin="2" FeatureName="Gamma" AutoVisibility="Visible"/>
+                                    <local:ROIControl x:Name="ROI_Control" 
+                                        ROIWidth="3" ROIWidthMin="0" ROIWidthMax="110"
+                                                      ROIHeight="5" ROIHeightMin="0" ROIHeightMax="220"
+                                                      ROIOffsetX="1" ROIOffsetXMin="1" ROIOffsetXMax="50"
+                                                      ROIOffsetY="2" ROIOffsetYMin="1" ROIOffsetYMax="40"/>
                                 </StackPanel>
                             </Expander>
                         </Border>
