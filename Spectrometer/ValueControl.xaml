@@ -31,7 +31,7 @@
                         Foreground="{DynamicResource Brush_Foreground}" Text="{Binding Path=FeatureName, ElementName=UserControl}"/>
 
             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                <xctk:DoubleUpDown MinWidth="90" Margin="2" VerticalAlignment="Center"
+                <xctk:DoubleUpDown MinWidth="90" Margin="2" VerticalAlignment="Center" Name="doubleUpDown"
                                    Style="{DynamicResource NUD_Style}" Value="{Binding Path=Value, ElementName=UserControl}"
                                    Maximum="{Binding Path=MaxValue, ElementName=UserControl}" Minimum="{Binding Path=MinValue, ElementName=UserControl}"
                                    Increment="{Binding Path=Increment, ElementName=UserControl}" FormatString="{Binding Path=ValueFormat, ElementName=UserControl}"/>
@@ -40,9 +40,8 @@
             </StackPanel>
         </Grid>
 
-        <Slider Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"
-                Style="{DynamicResource SliderStyle}" Value="{Binding Path=Value, ElementName=UserControl}"
-                Maximum="{Binding Path=MaxValue, ElementName=UserControl}" Minimum="{Binding Path=MinValue, ElementName=UserControl}"/>
+        <Slider Name="slider" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2" ValueChanged="slider_ValueChanged"
+                Style="{DynamicResource SliderStyle}"/>
 
         <Grid Grid.Row="2" Grid.Column="2">
             <Grid.ColumnDefinitions>
@@ -53,26 +52,10 @@
             
             <TextBlock HorizontalAlignment="Left" Margin="2" VerticalAlignment="Top" Grid.Column="0"
                         Foreground="{DynamicResource Brush_Foreground}" FontSize="12" Text="{Binding Path=MinValue, ElementName=UserControl}"/>
-            <CheckBox x:Name="CheckBox_Auto" Content="Auto" Margin="1" Width="90" FontSize="13" VerticalContentAlignment="Center"
-                      Visibility="{Binding Path=AutoVisibility, ElementName=UserControl}" Grid.Column="1" IsChecked="{Binding ElementName=UserControl, Path=IsAuto}">
-                <ToggleButton.Style>
-                    <Style TargetType="ToggleButton">
-                        <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="Foreground" Value="{DynamicResource Brush_Foreground_Pass}"/>
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource Brush_HightLight_2}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource Brush_Foreground}"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{DynamicResource Brush_HightLight_2}"/>
-                                <Setter Property="BorderBrush" Value="{DynamicResource Brush_Button_MouseOver}"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ToggleButton.Style>
-            </CheckBox>
+            <ToggleButton x:Name="ToggleButton_Auto" Content="Auto" Margin="1" Width="60" FontSize="12" VerticalContentAlignment="Center"
+                      Visibility="{Binding Path=AutoVisibility, ElementName=UserControl}" Grid.Column="1" IsChecked="{Binding ElementName=UserControl, Path=IsAuto}"
+                          Style="{DynamicResource ToggleButton_AutoStyle}">
+            </ToggleButton>
             <TextBlock HorizontalAlignment="Right" Margin="2" Grid.Column="2" VerticalAlignment="Top"
                         Foreground="{DynamicResource Brush_Foreground}" FontSize="12" Text="{Binding Path=MaxValue, ElementName=UserControl}"/>
         </Grid>

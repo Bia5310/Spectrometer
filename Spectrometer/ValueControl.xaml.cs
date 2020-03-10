@@ -30,7 +30,10 @@ namespace Spectrometer
         private static readonly DependencyProperty IsLogarithmProperty = null;
         private static readonly DependencyProperty AutoVisibilityProperty = null;
         private static readonly DependencyProperty UnitsProperty = null;
-        
+
+        public delegate void ValueChangedHandler(object sender);
+        public event ValueChangedHandler ValueChanged;
+
         static ValueControl()
         {
             FeatureNameProperty = DependencyProperty.Register("FeatureName", typeof(string), typeof(ValueControl), new FrameworkPropertyMetadata("Name",
@@ -39,25 +42,89 @@ namespace Spectrometer
                         FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
             UnitsProperty = DependencyProperty.Register("Units", typeof(string), typeof(ValueControl), new FrameworkPropertyMetadata(String.Empty,
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
-            ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(ValueControl), new FrameworkPropertyMetadata(0d,
-                        FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
+            ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(ValueControl), new FrameworkPropertyMetadata(1d,
+                        FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnValueChanged));
             MaxValueProperty = DependencyProperty.Register("MaxValue", typeof(double), typeof(ValueControl), new FrameworkPropertyMetadata(100d,
                         FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
-            MinValueProperty = DependencyProperty.Register("MinValue", typeof(double), typeof(ValueControl), new FrameworkPropertyMetadata(0d,
+            MinValueProperty = DependencyProperty.Register("MinValue", typeof(double), typeof(ValueControl), new FrameworkPropertyMetadata(1d,
                         FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
             IncrementProperty = DependencyProperty.Register("Increment", typeof(double), typeof(ValueControl), new FrameworkPropertyMetadata(1d,
                         FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
             AutoVisibilityProperty = DependencyProperty.Register("AutoVisibility", typeof(Visibility), typeof(ValueControl), new FrameworkPropertyMetadata(Visibility.Collapsed,
                         FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
             IsAutoProperty = DependencyProperty.Register("IsAuto", typeof(bool), typeof(ValueControl), new FrameworkPropertyMetadata(false,
-                FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
+                FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnIsAutoChanged));
             IsLogarithmProperty = DependencyProperty.Register("IsLogarithm", typeof(bool), typeof(ValueControl), new FrameworkPropertyMetadata(false,
-                FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
+                FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnLogarithmChanged));
         }
 
-        private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnIsAutoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            
+            ValueControl control = d as ValueControl;
+            control.slider.IsEnabled = !control.IsAuto;
+            control.doubleUpDown.IsEnabled = !control.IsAuto;
+        }
+
+        private static void OnLogarithmChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if((d as ValueControl).IsInitialized)
+            {
+                OnMaxValueChanged(d, e);
+                OnMinValueChanged(d, e);
+                OnValueChanged(d, e);
+            }
+        }
+
+        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ValueControl control = d as ValueControl;
+            if(control.IsInitialized)
+            {
+                control.slider.ValueChanged -= control.slider_ValueChanged;
+                if (control.IsLogarithm)
+                {
+                    control.slider.Value = Math.Log10(control.Value);
+                }
+                else
+                {
+                    control.slider.Value = control.Value;
+                }
+                control.slider.ValueChanged += control.slider_ValueChanged;
+            }
+
+            control.ValueChanged?.Invoke(control);
+        }
+
+        private static void OnMaxValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ValueControl control = d as ValueControl;
+            if(control.IsInitialized)
+            {
+                if(control.IsLogarithm)
+                {
+                    control.slider.Maximum = Math.Log10(control.MaxValue);
+                }
+                else
+                {
+                    control.slider.Maximum = control.MaxValue;
+                }
+            }
+        }
+
+        private static void OnMinValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ValueControl control = d as ValueControl;
+            if(control.IsInitialized)
+            {
+                if (control.IsLogarithm)
+                {
+                    control.slider.Minimum = Math.Log10(control.MinValue);
+                }
+                else
+                {
+                    control.slider.Minimum = control.MinValue;
+                }
+            }
         }
 
         public string FeatureName
@@ -126,6 +193,18 @@ namespace Spectrometer
         public ValueControl()
         {
             InitializeComponent();
+        }
+
+        private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(IsLogarithm)
+            {
+                Value = Math.Pow(10, slider.Value);
+            }
+            else
+            {
+                Value = slider.Value;
+            }
         }
     }
 }

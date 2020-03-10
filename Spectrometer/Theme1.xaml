@@ -34,9 +34,49 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush_Foreground}"/>
     </Style>
 
+    <Style x:Key="ToggleButton_AutoStyle" TargetType="ToggleButton">
+        <Style.Setters>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{DynamicResource Brush_Foreground_Pass}"/>
+            <Setter Property="Background" Value="{DynamicResource Brush_BoxBack}"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border Padding="1" Grid.Column="0" CornerRadius="3" BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush_BackLight}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush_Button_MouseOver}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Brush_Foreground}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush_HightLight_2}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Brush_Foreground}"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush_HightLight_2}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Brush_Foreground}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="NUD_Style" TargetType="{x:Type xctk:DoubleUpDown}">
         <Setter Property="Background" Value="{DynamicResource Brush_BoxBack}"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush_Foreground}"/>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.6"/>
+                <Setter Property="Foreground" Value="{DynamicResource Brush_Foreground}"/>
+            </Trigger>
+        </Style.Triggers>
         <!--<Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type xctk:DoubleUpDown}">

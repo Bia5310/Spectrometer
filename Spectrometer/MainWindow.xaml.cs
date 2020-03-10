@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using VimbaCameraNET;
 using static AO_Lib.AO_Devices;
 
 namespace Spectrometer
@@ -24,12 +26,61 @@ namespace Spectrometer
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        private AO_Filter AOFilter = null;
-
         public MainWindow()
         {
+            logger = LogManager.GetCurrentClassLogger();
 
+            try
+            {
+                VimbaCamera.OnLogMessage += LogWrite;
+                //VimbaCamera.OnCameraListChanged
+                //VimbaCamera.OnInterfaceListChangedHandler
+                vimbaCamera.FrameReceivedHandler = Camera_FrameReceived;
+                vimbaCamera.OnAccusitionChanged += AccusitionChanged;
+            }
+            catch (Exception exc)
+            {
+                LogWrite(exc.Message);
+            }
+        }
+
+        ~MainWindow()
+        {
+            try
+            {
+                VimbaCamera.OnLogMessage -= LogWrite;
+                //VimbaCamera.OnCameraListChanged
+                //VimbaCamera.OnInterfaceListChangedHandler
+                vimbaCamera.FrameReceivedHandler = null;
+                vimbaCamera.OnAccusitionChanged -= AccusitionChanged;
+
+                vimbaCamera.CloseCamera();
+                VimbaCamera.ShutdownVimba();
+                vimbaCamera = null;
+            }
+            catch (Exception) { }
+        }
+
+        private void AccusitionChanged(bool accusition)
+        {
+            /*if (InvokeRequired)
+            {
+                BeginInvoke(new VimbaCamera.OnAccusitionChangedHandler(AccusitionChanged), accusition);
+                return;
+            }
+            else
+            {
+                if (accusition)
+                {
+                    StartStopLiveToolStripMenuItem.Text = "Stop";
+                    StartStopLiveToolStripMenuItem.Image = Properties.Resources.pause_2;
+                }
+                else
+                {
+                    StartStopLiveToolStripMenuItem.Text = "Play";
+                    StartStopLiveToolStripMenuItem.Image = Properties.Resources.play_2;
+                }
+            }*/
         }
 
         private void TitleBar_MouseMove(object sender, MouseEventArgs e)
@@ -401,5 +452,43 @@ namespace Spectrometer
         }
 
         #endregion
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void ValueControl_ValueChanged(object sender)
+        {
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if(viewportControl1.Zoom <= 5)
+                viewportControl1.Zoom += 1;
+            else
+                viewportControl1.Zoom = 1;
+            
+        }
+
+        private void Viewport_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if(e.Delta > 0)
+            {
+                if(viewportControl1.Zoom < 100.5)
+                    viewportControl1.Zoom += 0.5;
+            }
+            else
+            {
+                if (viewportControl1.Zoom > 1.5)
+                    viewportControl1.Zoom -= 0.5;
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            AutoconnectToFirstCamera();
+        }
     }
 }

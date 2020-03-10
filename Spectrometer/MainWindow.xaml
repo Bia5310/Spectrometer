@@ -11,6 +11,7 @@
         AllowsTransparency="False"
         BorderBrush="Red"
         mc:Ignorable="d"
+        Loaded="Window_Loaded"
         Title="MainWindow" Height="1050" Width="1250" Background="{DynamicResource Brush_BackDark}">
     <Window.Resources>
         <Style TargetType="ScrollBar">
@@ -68,8 +69,14 @@
                     <RowDefinition Height="190"/>
                 </Grid.RowDefinitions>
 
+                <local:ViewportControl Grid.Column="1" Grid.Row="0" x:Name="viewportControl1" Zoom="1"
+                                       MouseWheel="Viewport_MouseWheel">
+                    
+                </local:ViewportControl>
+                
                 <StackPanel Grid.Row="0" Grid.Column="0" Background="{DynamicResource Brush_BackSide}">
-                    <Button Width="40" Height="40" Style="{DynamicResource ButtonSquare}" Margin="2 3 2 1">
+                    <Button Width="40" Height="40" Style="{DynamicResource ButtonSquare}" Margin="2 3 2 1"
+                            Click="Button_Click_1">
                         <Button.Content>
                             <Image Source="Assets/DevicesList.png"/>
                         </Button.Content>
@@ -110,7 +117,7 @@
                                         <xctk:DoubleUpDown Margin="2" Grid.Row="1" Grid.Column="1" Style="{DynamicResource NUD_Style}"/>
                                         <xctk:DoubleUpDown Margin="2" Grid.Row="1" Grid.Column="2" Style="{DynamicResource NUD_Style}"/>
 
-                                        <Button Margin="2" Grid.Row="1" Grid.Column="3" Content="Захват" Style="{DynamicResource ButtonSimpleStyle}"/>
+                                        <Button Margin="2" Grid.Row="1" Grid.Column="3" Content="Захват" Click="Button_Click" Style="{DynamicResource ButtonSimpleStyle}"/>
                                     </Grid>
 
                                     <Grid Margin="0 5 0 5">
@@ -229,7 +236,8 @@
                         <Border Margin="0 4 0 4" CornerRadius="3" BorderThickness="0" Background="{DynamicResource Brush_BackLight}">
                             <Expander Header="Камера" Style="{DynamicResource ExpanderStyle}" IsExpanded="True" Padding="2">
                                 <StackPanel>
-                                    <local:ValueControl Margin="2" FeatureName="Exposure" MinValue="1" AutoVisibility="Visible" IsAuto="True" IsLogarithm="True"/>
+                                    <local:ValueControl Margin="2" FeatureName="Exposure" MinValue="1" AutoVisibility="Visible" IsAuto="True" IsLogarithm="True" Value="1"
+                                                        MaxValue="1000000" ValueChanged="ValueControl_ValueChanged"/>
                                     <local:ValueControl Margin="2" FeatureName="Gain" AutoVisibility="Visible"/>
                                     <local:ValueControl Margin="2" FeatureName="Gamma" AutoVisibility="Visible"/>
                                 </StackPanel>
@@ -290,7 +298,7 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Text="Лог" Grid.Row="0" Margin="2" Foreground="{DynamicResource Brush_Foreground}"/>
-                        <ListBox VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Margin="3 2 4 6" 
+                        <ListBox x:Name="listBoxLog" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Margin="3 2 4 6" 
                                  Background="{DynamicResource Brush_BackDark}" Foreground="{DynamicResource Brush_Foreground}" BorderBrush="{DynamicResource Brush_BackLight}"/>
                     </Grid>
 
