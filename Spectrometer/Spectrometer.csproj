@@ -105,6 +105,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ApplicationViewModel.cs" />
+    <Compile Include="Commands.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="MainWindow2.cs" />
     <Compile Include="ROIControl.xaml.cs">

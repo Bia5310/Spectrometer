@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -465,11 +466,7 @@ namespace Spectrometer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if(viewportControl1.Zoom <= 5)
-                viewportControl1.Zoom += 1;
-            else
-                viewportControl1.Zoom = 1;
-            
+
         }
 
         private void Viewport_MouseWheel(object sender, MouseWheelEventArgs e)

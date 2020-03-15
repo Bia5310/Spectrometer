@@ -1,13 +1,15 @@
 ﻿using AVT.VmbAPINET;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace VimbaCameraNET
 {
-    public partial class VimbaCamera
+    public partial class VimbaCamera : INotifyPropertyChanged
     {
         #region Поля, переменные, объекты
 
@@ -112,14 +114,16 @@ namespace VimbaCameraNET
 
         /// <summary>Вызывается при подключении/отключении камеры</summary>
         public static event Vimba.OnInterfaceListChangeHandler OnInterfaceListChangedHandler = null;
-
         public delegate void OnLogMessageHandler(string message);
+
         /// <summary>Подпишитесь на это событие, чтобы получать сообщения от VimbaCamera</summary>
         public static event OnLogMessageHandler OnLogMessage = null;
 
         public delegate void OnAccusitionChangedHandler(bool accusition);
         /// <summary>Вызывается при изменении Accusition</summary>
         public event OnAccusitionChangedHandler OnAccusitionChanged = null;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
 
@@ -207,6 +211,12 @@ namespace VimbaCameraNET
             return !isVimbaInited;
         }
 
+        public void OnPropertyChanged([CallerMemberName]string prop = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+        }
+
         /// <summary>Коллекция всех подключенных камер</summary>
         public static CameraCollection Cameras
         {
@@ -227,6 +237,36 @@ namespace VimbaCameraNET
                     throw new NullReferenceException("Vimba not inited");
                 lock(m_Vimba.Interfaces.SyncRoot)
                     return m_Vimba.Interfaces;
+            }
+        }
+
+        public CameraFeature GetFeature(FeatureType featureType)
+        {
+            switch(featureType)
+            {
+                case FeatureType.Exposure:
+                    return Exposure;
+                case FeatureType.Gain:
+                    return Gain;
+                case FeatureType.Gamma:
+                    return Gamma;
+                case FeatureType.Width:
+                    return Width;
+                case FeatureType.OffsetX:
+                    return OffsetX;
+                case FeatureType.Height:
+                    return Height;
+                case FeatureType.OffsetY:
+                    return OffsetY;
+                case FeatureType.BinningX:
+                    return BinningX;
+                case FeatureType.BinningY:
+                    return BinningY;
+                case FeatureType.BlackLevel:
+                    return BlackLevel;
+                case FeatureType.None:
+                default:
+                    return null;
             }
         }
 
