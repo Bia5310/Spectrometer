@@ -667,5 +667,56 @@ namespace Spectrometer
                 }
             }*/
         }
+
+        private void TrackBar_ValueChanged(object sender)
+        {
+            ValueControl trackBar = (ValueControl)sender;
+            if (vimbaCamera != null && vimbaCamera.IsOpened)
+            {
+                switch ((string)trackBar.Tag)
+                {
+                    case "Exposure":
+                        vimbaCamera.Exposure.Value = trackBar.Value;
+                        break;
+                    case "Gain":
+                        vimbaCamera.Gain.Value = trackBar.Value;
+                        break;
+                    case "Gamma":
+                        vimbaCamera.Gamma.Value = trackBar.Value;
+                        break;
+                    /*case "Width":
+                        vimbaCamera.Width.Value = trackBar.Value;
+                        break;
+                    case "Height":
+                        vimbaCamera.Height.Value = trackBar.Value;
+                        break;
+                    case "OffsetX":
+                        vimbaCamera.OffsetX.Value = trackBar.Value;
+                        break;
+                    case "OffsetY":
+                        vimbaCamera.OffsetY.Value = trackBar.Value;
+                        break;*/
+                    /*case "BinningX":
+                        vimbaCamera.BinningX.Value = trackBar.Value;
+                        break;
+                    case "BinningY":
+                        vimbaCamera.BinningY.Value = trackBar.Value;
+                        break;*/
+                }
+
+                switch ((string)trackBar.Tag)
+                {
+                    /*case "Width":
+                    case "Height":
+                    case "OffsetX":
+                    case "OffsetY":*/
+                    case "BinningX":
+                    case "BinningY":
+                        vimbaCamera.StopContiniousAsyncAccusition(false);
+                        vimbaCamera.StartContiniousAsyncAccusition(false);
+                        break;
+                }
+            }
+        }
     }
 }

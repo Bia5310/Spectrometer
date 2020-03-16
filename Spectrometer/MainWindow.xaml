@@ -12,7 +12,8 @@
         BorderBrush="Red"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Title="MainWindow" Height="1180" Width="1250" Background="{DynamicResource Brush_BackDark}">
+        Name="mainForm"
+        Title="MainWindow" Height="1180" Width="1500" Background="{DynamicResource Brush_BackDark}">
     <Window.Resources>
         <Style TargetType="ScrollBar">
             <Setter Property="Width" Value="8"/>
@@ -21,7 +22,7 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Margin" Value="4 0 0 0"/>
         </Style>
-
+        
         <Style TargetType="Thumb">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="OverridesDefaultStyle" Value="true"/>
@@ -74,14 +75,15 @@
                     
                 </local:ViewportControl>
                 
-                <StackPanel VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Background="{DynamicResource Brush_BackSide}">
+                <StackPanel Grid.Row="0" Grid.Column="0" Background="{DynamicResource Brush_BackSide}" VerticalAlignment="Center">
                     <Button Width="40" Height="40" Style="{DynamicResource ButtonSquare}" Margin="2 3 2 1"
                             Click="Button_Click_1">
-                        <Button.Content>
-                            <Image Source="Assets/DevicesList.png"/>
-                        </Button.Content>
+                        <Image Source="Assets/DevicesList.png"/>
                     </Button>
                     <Button Width="40" Height="40" Style="{DynamicResource ButtonSquare}" Margin="2 1 2 1" Padding="2">
+                        <Button.Triggers>
+                            
+                        </Button.Triggers>
                         <Image Source="Assets/Play.png"/>
                     </Button>
                     <Button Width="40" Height="40" Style="{DynamicResource ButtonSquare}" Margin="2 1 2 1">
@@ -117,8 +119,7 @@
                                         <xctk:DoubleUpDown Margin="2" Grid.Row="1" Grid.Column="1" Style="{DynamicResource NUD_Style}"/>
                                         <xctk:DoubleUpDown Margin="2" Grid.Row="1" Grid.Column="2" Style="{DynamicResource NUD_Style}"/>
 
-                                        <Button Margin="2" Grid.Row="1" Grid.Column="3" Content="Захват"
-                                                Click="Button_Click" Style="{DynamicResource ButtonSimpleStyle}"/>
+                                        <Button Margin="2" Grid.Row="1" Grid.Column="3" Content="Захват" Click="Button_Click" Style="{DynamicResource ButtonSimpleStyle}"/>
                                     </Grid>
 
                                     <Grid Margin="0 5 0 5">
@@ -238,14 +239,16 @@
                             <Expander Header="Камера" Style="{DynamicResource ExpanderStyle}" IsExpanded="True" Padding="2">
                                 <StackPanel>
                                     <local:ValueControl x:Name="ExposureControl" Margin="2" FeatureName="Exposure" MinValue="1" AutoVisibility="Visible" IsAuto="True" IsLogarithm="True" Value="1"
-                                                        MaxValue="1000000" ValueChanged="ValueControl_ValueChanged"/>
-                                    <local:ValueControl x:Name="GainControl" Margin="2" FeatureName="Gain" AutoVisibility="Visible"/>
-                                    <local:ValueControl x:Name="GammaControl" Margin="2" FeatureName="Gamma" AutoVisibility="Visible"/>
-                                    <local:ROIControl x:Name="ROI_Control" 
-                                        ROIWidth="3" ROIWidthMin="0" ROIWidthMax="110"
-                                                      ROIHeight="5" ROIHeightMin="0" ROIHeightMax="220"
-                                                      ROIOffsetX="1" ROIOffsetXMin="1" ROIOffsetXMax="50"
-                                                      ROIOffsetY="2" ROIOffsetYMin="1" ROIOffsetYMax="40"/>
+                                                        MaxValue="1000000" ValueChanged="TrackBar_ValueChanged" Tag="Exposure"/>
+                                    <local:ValueControl x:Name="GainControl" Margin="2" FeatureName="Gain" AutoVisibility="Visible" Tag="Gain"
+                                                        ValueChanged="TrackBar_ValueChanged"/>
+                                    <local:ValueControl x:Name="GammaControl" Margin="2" FeatureName="Gamma" AutoVisibility="Visible" Tag="Gamma"
+                                                        ValueChanged="TrackBar_ValueChanged"/>
+                                    <local:ROIControl x:Name="ROI_Control" Tag="ROI" ROIChanged="ROI_Control_ROIChanged"
+                                                      ROIWidth="100" ROIWidthMin="0" ROIWidthMax="100"
+                                                      ROIHeight="100" ROIHeightMin="0" ROIHeightMax="100"
+                                                      ROIOffsetX="0" ROIOffsetXMin="0" ROIOffsetXMax="50"
+                                                      ROIOffsetY="0" ROIOffsetYMin="0" ROIOffsetYMax="40"/>
                                 </StackPanel>
                             </Expander>
                         </Border>

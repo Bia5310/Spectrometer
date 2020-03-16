@@ -37,33 +37,33 @@ namespace Spectrometer
         static ROIControl()
         {
             ROIWidthProperty = DependencyProperty.Register("ROIWidth", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(1,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
             ROIHeightProperty = DependencyProperty.Register("ROIHeight", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(1,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
             ROIOffsetXProperty = DependencyProperty.Register("ROIOffsetX", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(0,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
             ROIOffsetYProperty = DependencyProperty.Register("ROIOffsetY", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(0,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
 
             ROIWidthMinProperty = DependencyProperty.Register("ROIWidthMin", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(1,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
             ROIWidthMaxProperty = DependencyProperty.Register("ROIWidthMax", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(100,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
 
             ROIHeightMinProperty = DependencyProperty.Register("ROIHeightMin", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(1,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
             ROIHeightMaxProperty = DependencyProperty.Register("ROIHeightMax", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(100,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
 
             ROIOffsetXMinProperty = DependencyProperty.Register("ROIOffsetXMin", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(0,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
             ROIOffsetXMaxProperty = DependencyProperty.Register("ROIOffsetXMax", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(100,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
 
             ROIOffsetYMinProperty = DependencyProperty.Register("ROIOffsetYMin", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(0,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
             ROIOffsetYMaxProperty = DependencyProperty.Register("ROIOffsetYMax", typeof(int), typeof(ROIControl), new FrameworkPropertyMetadata(100,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure));
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, OnROIPropertyChanged));
         }
 
         public int ROIWidth
@@ -136,12 +136,21 @@ namespace Spectrometer
             set => SetValue(ROIOffsetYMaxProperty, value);
         }
 
+        private static void OnROIPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ROIControl roi = d as ROIControl;
+            roi.ROIChanged?.Invoke(roi);
+        }
+
         public static void OnROIWidthChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ROIControl control = d as ROIControl;
             
 
         }
+
+        public delegate void OnROIChanged(object sender);
+        public event OnROIChanged ROIChanged;
 
         public ROIControl()
         {

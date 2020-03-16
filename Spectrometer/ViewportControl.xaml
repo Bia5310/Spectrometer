@@ -26,10 +26,10 @@
                    Source="{Binding ElementName=viewport, Path=Image}"/>
         </Canvas>
 
-        <ScrollBar Minimum="-0.5" Maximum="0.5" Grid.Column="1" Grid.Row="0" Name="scrollBarY" ValueChanged="scrollBarY_ValueChanged" Orientation="Vertical"
-                   Value="{Binding ElementName=viewport, Path=ScrollY}" ViewportSize="0.2"/>
-        <ScrollBar Minimum="-0.5" Maximum="0.5" Grid.Column="0" Grid.Row="1" Name="scrollBarX" ValueChanged="scrollBarX_ValueChanged"
-                   Value="{Binding ElementName=viewport, Path=ScrollX}" ViewportSize="0.1">
+        <ScrollBar Minimum="-1" Maximum="1" Grid.Column="1" Grid.Row="0" Name="scrollBarY" ValueChanged="scrollBarY_ValueChanged" Orientation="Vertical"
+                   Value="{Binding ElementName=viewport, Path=ScrollY}" ViewportSize="1"/>
+        <ScrollBar Minimum="-1" Maximum="1" Grid.Column="0" Grid.Row="1" Name="scrollBarX" ValueChanged="scrollBarX_ValueChanged"
+                   Value="{Binding ElementName=viewport, Path=ScrollX}" ViewportSize="1">
             <ScrollBar.LayoutTransform>
                 <RotateTransform Angle="-90"/>
             </ScrollBar.LayoutTransform>

@@ -27,12 +27,34 @@ namespace Spectrometer
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static readonly DependencyProperty IsCameraConnectedProperty = null;
+        public static readonly DependencyProperty IsCameraLiveStreamProperty = null;
+
+        static MainWindow()
+        {
+            IsCameraConnectedProperty = DependencyProperty.Register("IsCameraConnected", typeof(bool), typeof(MainWindow), new FrameworkPropertyMetadata(false));
+            IsCameraLiveStreamProperty = DependencyProperty.Register("IsCameraLiveStream", typeof(bool), typeof(MainWindow), new FrameworkPropertyMetadata(false));
+        }
+
+        public bool IsCameraLive
+        {
+            set => SetValue(IsCameraLiveStreamProperty, value);
+            get => (bool)GetValue(IsCameraLiveStreamProperty);
+        }
+
+        public bool IsCameraConnected
+        {
+            private set => SetValue(IsCameraConnectedProperty, value);
+            get => (bool)GetValue(IsCameraConnectedProperty);
+        }
+
         public MainWindow()
         {
             logger = LogManager.GetCurrentClassLogger();
-
+            
             try
             {
+                
                 VimbaCamera.OnLogMessage += LogWrite;
                 //VimbaCamera.OnCameraListChanged
                 //VimbaCamera.OnInterfaceListChangedHandler
@@ -486,6 +508,18 @@ namespace Spectrometer
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             AutoconnectToFirstCamera();
+        }
+
+        private void ROI_Control_ROIChanged(object sender)
+        {
+            if (vimbaCamera != null && vimbaCamera.IsOpened)
+            {
+                vimbaCamera.SetUpROI(ROI_Control.ROIOffsetX, ROI_Control.ROIOffsetY, ROI_Control.ROIWidth, ROI_Control.ROIHeight);
+                vimbaCamera.StopContiniousAsyncAccusition();
+                vimbaCamera.StartContiniousAsyncAccusition();
+            }
+
+                
         }
     }
 }
