@@ -11,10 +11,11 @@
         AllowsTransparency="False"
         BorderBrush="Red"
         mc:Ignorable="d"
-        Loaded="Window_Loaded"
         Name="mainForm"
         Title="MainWindow" Height="1180" Width="1500" Background="{DynamicResource Brush_BackDark}">
     <Window.Resources>
+        <local:LogarithmConverter x:Key="logarithmConverter"/>
+
         <Style TargetType="ScrollBar">
             <Setter Property="Width" Value="8"/>
             <Setter Property="Background" Value="{DynamicResource Brush_BackSide}"/>
@@ -46,14 +47,14 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Grid Height="25" Visibility="Collapsed" x:Name="TitleBar" Background="Tomato" MouseMove="TitleBar_MouseMove" MouseDown="TitleBar_MouseDown">
+            <Grid Height="25" Visibility="Collapsed" x:Name="TitleBar" Background="Tomato">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="Button_Hide" Content="Hide" Click="Button_Hide_Click"/>
-                    <ToggleButton x:Name="ToggleButton_MaxMin" Content="M" Click="ToggleButton_MaxMin_Click"/>
-                    <Button x:Name="Button_Close" Content="X" Click="Button_Close_Click"/>
+                    <Button x:Name="Button_Hide" Content="Hide"/>
+                    <ToggleButton x:Name="ToggleButton_MaxMin" Content="M"/>
+                    <Button x:Name="Button_Close" Content="X"/>
                 </StackPanel>
             </Grid>
 
@@ -70,14 +71,13 @@
                     <RowDefinition Height="190"/>
                 </Grid.RowDefinitions>
 
-                <local:ViewportControl Grid.Column="1" Grid.Row="0" x:Name="viewportControl1" Zoom="1"
-                                       MouseWheel="Viewport_MouseWheel">
+                <local:ViewportControl Grid.Column="1" Grid.Row="0" x:Name="viewportControl1" Zoom="1">
                     
                 </local:ViewportControl>
                 
                 <StackPanel Grid.Row="0" Grid.Column="0" Background="{DynamicResource Brush_BackSide}" VerticalAlignment="Center">
                     <Button Width="40" Height="40" Style="{DynamicResource ButtonSquare}" Margin="2 3 2 1"
-                            Click="Button_Click_1">
+                            Command="{Binding ConnectToCameraCommand}">
                         <Image Source="Assets/DevicesList.png"/>
                     </Button>
                     <Button Width="40" Height="40" Style="{DynamicResource ButtonSquare}" Margin="2 1 2 1" Padding="2">
@@ -119,7 +119,7 @@
                                         <xctk:DoubleUpDown Margin="2" Grid.Row="1" Grid.Column="1" Style="{DynamicResource NUD_Style}"/>
                                         <xctk:DoubleUpDown Margin="2" Grid.Row="1" Grid.Column="2" Style="{DynamicResource NUD_Style}"/>
 
-                                        <Button Margin="2" Grid.Row="1" Grid.Column="3" Content="Захват" Click="Button_Click" Style="{DynamicResource ButtonSimpleStyle}"/>
+                                        <Button Margin="2" Grid.Row="1" Grid.Column="3" Content="Захват" Style="{DynamicResource ButtonSimpleStyle}"/>
                                     </Grid>
 
                                     <Grid Margin="0 5 0 5">
@@ -186,11 +186,11 @@
                             <Expander IsExpanded="True" Header="АОФ" Style="{DynamicResource ExpanderStyle}" Padding="3">
                                 <StackPanel Margin="2 0 0 0">
                                     <UniformGrid Rows="1" Columns="3">
-                                        <Button Content="Подкл." Margin="2" x:Name="buttonConnectAOF" Click="ButtonConnectAOF_Click"
+                                        <Button Content="Подкл." Margin="2" x:Name="buttonConnectAOF"
                                                 Style="{DynamicResource ButtonSimpleStyle}"/>
-                                        <Button Content="Загр. *.dev" Margin="2" x:Name="buttonLoadDev" Click="ButtonLoadDev_Click" IsEnabled="False"
+                                        <Button Content="Загр. *.dev" Margin="2" x:Name="buttonLoadDev" IsEnabled="False"
                                                 Style="{DynamicResource ButtonSimpleStyle}"/>
-                                        <Button Content="Вкл. пит" Margin="2" x:Name="buttonPower" Click="ButtonPower_Click" IsEnabled="False"
+                                        <Button Content="Вкл. пит" Margin="2" x:Name="buttonPower" IsEnabled="False"
                                                 Style="{DynamicResource ButtonSimpleStyle}"/>
                                     </UniformGrid>
                                     <Grid Margin="2 4 2 4">
@@ -207,27 +207,23 @@
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
 
-                                        <Slider Grid.Row="0" Grid.Column="1" Margin="2" IsEnabled="False" x:Name="sliderWavelength" ValueChanged="SliderWavelength_ValueChanged"
+                                        <Slider Grid.Row="0" Grid.Column="1" Margin="2" IsEnabled="False" x:Name="sliderWavelength"
                                                 Style="{DynamicResource SliderStyle}"/>
-                                        <Slider Grid.Row="1" Grid.Column="1" Margin="2" IsEnabled="False" x:Name="sliderWavenumber" ValueChanged="SliderWavenumber_ValueChanged"
+                                        <Slider Grid.Row="1" Grid.Column="1" Margin="2" IsEnabled="False" x:Name="sliderWavenumber"
                                                 Style="{DynamicResource SliderStyle}"/>
-                                        <Slider Grid.Row="2" Grid.Column="1" Margin="2" IsEnabled="False" x:Name="sliderFrequency" ValueChanged="SliderFrequency_ValueChanged"
+                                        <Slider Grid.Row="2" Grid.Column="1" Margin="2" IsEnabled="False" x:Name="sliderFrequency"
                                                 Style="{DynamicResource SliderStyle}"/>
-                                        <Slider Grid.Row="3" Grid.Column="1" Margin="2" IsEnabled="False" x:Name="sliderAttenuation" ValueChanged="SliderAttenuation_ValueChanged"
+                                        <Slider Grid.Row="3" Grid.Column="1" Margin="2" IsEnabled="False" x:Name="sliderAttenuation"
                                             Maximum="2500" Minimum="1700" Value="2500" Style="{DynamicResource SliderStyle}"/>
                                         
                                         <TextBlock Text="λ, нм:" Grid.Row="0" Grid.Column="0" Margin="2" FontSize="13" VerticalAlignment="Center"/>
                                         <TextBlock Text="1/λ , см⁻¹:" Grid.Row="1" Grid.Column="0" Margin="2" FontSize="13" VerticalAlignment="Center"/>
                                         <TextBlock Text="f, Hz:" Grid.Row="2" Grid.Column="0" Margin="2" FontSize="13" VerticalAlignment="Center"/>
                                         <TextBlock Text="Ослабл. K:" Grid.Row="3" Grid.Column="0" Margin="2" FontSize="13" VerticalAlignment="Center"/>
-                                        <TextBox Grid.Row="0" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxWavelength" TextChanged="TextBoxWavelength_TextChanged"
-                                     KeyDown="TextBoxWavelength_KeyDown"/>
-                                        <TextBox Grid.Row="1" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxWavenumber" TextChanged="TextBoxWavenumber_TextChanged"
-                                     KeyDown="textBoxWavenumber_KeyDown"/>
-                                        <TextBox Grid.Row="2" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxFrequency" TextChanged="TextBoxFrequency_TextChanged"
-                                     KeyDown="textBoxFrequency_KeyDown"/>
-                                        <TextBox Grid.Row="3" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxAttenuation" TextChanged="TextBoxAttenuation_TextChanged"
-                                     KeyDown="TextBoxAttenuation_KeyDown" Text="2500"/>
+                                        <TextBox Grid.Row="0" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxWavelength"/>
+                                        <TextBox Grid.Row="1" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxWavenumber"/>
+                                        <TextBox Grid.Row="2" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxFrequency"/>
+                                        <TextBox Grid.Row="3" Grid.Column="2" Margin="2" IsEnabled="False" x:Name="textBoxAttenuation" Text="2500"/>
                                     </Grid>
                                     <CheckBox Content="Осбление ползунком" Foreground="{DynamicResource Brush_Foreground}" Margin="2" Name="AutoAtten"
                                                VerticalContentAlignment="Center"/>
@@ -238,17 +234,38 @@
                         <Border Margin="0 4 0 4" CornerRadius="3" BorderThickness="0" Background="{DynamicResource Brush_BackLight}">
                             <Expander Header="Камера" Style="{DynamicResource ExpanderStyle}" IsExpanded="True" Padding="2">
                                 <StackPanel>
-                                    <local:ValueControl x:Name="ExposureControl" Margin="2" FeatureName="Exposure" MinValue="1" AutoVisibility="Visible" IsAuto="True" IsLogarithm="True" Value="1"
-                                                        MaxValue="1000000" ValueChanged="TrackBar_ValueChanged" Tag="Exposure"/>
+                                    <local:ValueControl x:Name="ExposureControl" Margin="2" FeatureName="Exposure" AutoVisibility="Visible" IsLogarithm="True"
+                                                        MinValue="{Binding Path=ExposureMin, UpdateSourceTrigger=PropertyChanged}"
+                                                        MaxValue="{Binding Path=ExposureMax, UpdateSourceTrigger=PropertyChanged}"
+                                                        Value="{Binding Path=Exposure, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                        IsAuto="{Binding Path=ExposureAuto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                        Tag="Exposure"/>
                                     <local:ValueControl x:Name="GainControl" Margin="2" FeatureName="Gain" AutoVisibility="Visible" Tag="Gain"
-                                                        ValueChanged="TrackBar_ValueChanged"/>
-                                    <local:ValueControl x:Name="GammaControl" Margin="2" FeatureName="Gamma" AutoVisibility="Visible" Tag="Gamma"
-                                                        ValueChanged="TrackBar_ValueChanged"/>
-                                    <local:ROIControl x:Name="ROI_Control" Tag="ROI" ROIChanged="ROI_Control_ROIChanged"
-                                                      ROIWidth="100" ROIWidthMin="0" ROIWidthMax="100"
-                                                      ROIHeight="100" ROIHeightMin="0" ROIHeightMax="100"
-                                                      ROIOffsetX="0" ROIOffsetXMin="0" ROIOffsetXMax="50"
-                                                      ROIOffsetY="0" ROIOffsetYMin="0" ROIOffsetYMax="40"/>
+                                                        MinValue="{Binding Path=GainMin, UpdateSourceTrigger=PropertyChanged}"
+                                                        MaxValue="{Binding Path=GainMax, UpdateSourceTrigger=PropertyChanged}"
+                                                        Value="{Binding Path=Gain, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                        IsAuto="{Binding Path=GainAuto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                    <local:ValueControl x:Name="GammaControl" Margin="2" FeatureName="Gamma" AutoVisibility="Collapsed" Tag="Gamma" Increment="0.01"
+                                                        MinValue="{Binding Path=GammaMin, UpdateSourceTrigger=PropertyChanged}"
+                                                        MaxValue="{Binding Path=GammaMax, UpdateSourceTrigger=PropertyChanged}"
+                                                        Value="{Binding Path=Gamma, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                        IsAuto="{Binding Path=GammaAuto, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                    <local:ROIControl x:Name="ROI_Control" Tag="ROI"
+                                                      ROIWidth="{Binding Path=Width,  UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                      ROIWidthMin="{Binding Path=WidthMin,  UpdateSourceTrigger=PropertyChanged}"  
+                                                      ROIWidthMax="{Binding Path=WidthMax,  UpdateSourceTrigger=PropertyChanged}" 
+                                                      
+                                                      ROIHeight="{Binding Path=Height,  UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                      ROIHeightMin="{Binding Path=HeightMin,  UpdateSourceTrigger=PropertyChanged}" 
+                                                      ROIHeightMax="{Binding Path=HeightMax,  UpdateSourceTrigger=PropertyChanged}" 
+                                                      
+                                                      ROIOffsetX="{Binding Path=OffsetX,  UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                      ROIOffsetXMin="{Binding Path=OffsetXMin,  UpdateSourceTrigger=PropertyChanged}" 
+                                                      ROIOffsetXMax="{Binding Path=OffsetXMax,  UpdateSourceTrigger=PropertyChanged}" 
+                                                      
+                                                      ROIOffsetY="{Binding Path=OffsetY,  UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                                      ROIOffsetYMin="{Binding Path=OffsetYMin,  UpdateSourceTrigger=PropertyChanged}" 
+                                                      ROIOffsetYMax="{Binding Path=OffsetYMax,  UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                             </Expander>
                         </Border>
@@ -266,7 +283,7 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <Expander Margin="2" ExpandDirection="Right" Grid.Row="0" Grid.Column="0" Collapsed="Expander_Collapsed" Expanded="Expander_Expanded"
+                    <Expander Margin="2" ExpandDirection="Right" Grid.Row="0" Grid.Column="0"
                               Style="{DynamicResource ExpanderStyle}">
                         <Expander.HeaderTemplate>
                             <DataTemplate>

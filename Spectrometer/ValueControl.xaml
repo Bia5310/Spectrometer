@@ -40,7 +40,7 @@
             </StackPanel>
         </Grid>
 
-        <Slider Name="slider" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2" ValueChanged="slider_ValueChanged"
+        <Slider Name="slider" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="2"
                 Style="{DynamicResource SliderStyle}"/>
 
         <Grid Grid.Row="2" Grid.Column="2">

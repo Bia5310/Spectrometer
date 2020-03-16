@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using VimbaCameraNET;
 using static AO_Lib.AO_Devices;
 using static VimbaCameraNET.VimbaCamera;
@@ -19,30 +20,141 @@ namespace Spectrometer
         private VimbaCamera _camera = null;
         private AO_Filter AOFilter = null;
 
-        public ObservableCollection<VimbaCamera> ConnectedCameras { get; set; }
-
         public ApplicationViewModel()
         {
-
+            _camera = new VimbaCamera();
+            VimbaCamera.OnCameraListChanged += VimbaCamera_OnCameraListChanged;
         }
 
-        private ClickCommand connectToCameraCommand;
+        ~ApplicationViewModel()
+        {
+            DisconnectCamera();
+            _camera = null;
+        }
+
+        #region CameraRegion
+
+        private void VimbaCamera_OnCameraListChanged(VmbUpdateTriggerType reason)
+        {
+            OnPropertyChanged("ConnectedCameras");
+        }
+
+        public CameraCollection ConnectedCameras
+        {
+            get => VimbaCamera.Cameras;
+            set { }
+        }
+
+        private ClickCommand connectToCameraCommand = null;
+
         public ClickCommand ConnectToCameraCommand
         {
             get
             {
-                return connectToCameraCommand ??
-                    new ClickCommand(cameraInfo =>
-                    { 
-                        if(cameraInfo == null)
+                return connectToCameraCommand ?? new ClickCommand(cameraInfo =>
+                {
+                    try
+                    {
+                        CameraCollection cameras = VimbaCamera.Cameras;
+                        if (cameras.Count == 0)
                         {
-                            //Connect to selected
+                            return;
                         }
-                        else
+
+                        string targetID = "";
+
+                        if (cameras.Count == 1)
                         {
-                            //Autoconnect to first
+                            targetID = cameras[0].Id;
                         }
-                    });
+
+                        if (cameras.Count > 1)
+                        {
+                            //Отобразим диалог и предложим выбрать камеру. Временно просто подкл. 1-ую камеру
+                            targetID = cameras[0].Id;
+                        }
+
+                        ConnectToCamera(targetID);
+                    }
+                    catch (Exception) { }
+                });
+            }
+        }
+
+        private ClickCommand disconnectCameraCommand = null;
+        public ClickCommand DisconnectCameraCommand
+        {
+            get
+            {
+                return disconnectCameraCommand ?? new ClickCommand((cameraInfo =>
+                {
+                    DisconnectCamera();
+                }));
+            }
+        }
+
+        public void DisconnectCamera()
+        {
+            _camera.StopContiniousAsyncAccusition();
+            _camera.CloseCamera();
+            UnsubscribeEvents();
+            _camera.OnCameraConnectionStateChanged -= _camera_OnCameraConnectionStateChanged;
+        }
+
+        public void ConnectToCamera(string id)
+        {
+            try
+            {
+                if(_camera.IsOpened)
+                {
+                    DisconnectCamera();
+                }
+
+                _camera.OpenCamera(VimbaCamera.Cameras[0].Id);
+
+                if (_camera.IsOpened)
+                {
+                    try
+                    {
+                        _camera.OnCameraConnectionStateChanged += _camera_OnCameraConnectionStateChanged;
+
+                        SubscribeEvents();
+                        UpdateAllCameraFeatures();
+                    }
+                    catch (Exception exc)
+                    {
+                        MessageBox.Show(exc.ToString());
+                    }
+
+                    _camera.RestoreFullROI(true);
+                    _camera.StartContiniousAsyncAccusition();
+
+                    //logger.Info("Подключена камера " + vimbaCamera.ToString());
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+
+        }
+
+        private void _camera_OnCameraConnectionStateChanged(bool connected)
+        {
+            IsCameraOpened = connected;
+        }
+
+        private bool isCameraOpened = false;
+        public bool IsCameraOpened
+        {
+            get
+            {
+                return isCameraOpened;
+            }
+            set
+            {
+                isCameraOpened = value;
+                OnPropertyChanged();
             }
         }
 
@@ -54,14 +166,7 @@ namespace Spectrometer
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
 
-        private void _camera_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            OnPropertyChanged(e.PropertyName);
-        }
-
-        #region CameraRegion
-
-        public void SetValue(FeatureType featureType, dynamic value, [CallerMemberName]string featureName = "")
+        public void SetFeatureValue(FeatureType featureType, dynamic value, [CallerMemberName]string featureName = "")
         {
             if (_camera != null)
             {
@@ -74,207 +179,363 @@ namespace Spectrometer
             }
         }
 
-        public dynamic GetValue(FeatureType featureType, dynamic defValue = null)
+        public dynamic GetFeatureValue(FeatureType featureType, dynamic defValue = null)
         {
-            if (_camera != null)
-            {
-                CameraFeature f = _camera.GetFeature(featureType);
-                if (f.IsAvailable)
-                    return f.Value;
-            }
+            CameraFeature f = _camera.GetFeature(featureType);
+            if (f.IsAvailable)
+                return f.Value;
             return defValue ?? 0;
         }
 
-        public dynamic GetValueMin(FeatureType featureType, dynamic defValue = null)
+        public dynamic GetFeatureValueMin(FeatureType featureType, dynamic defValue = null)
         {
-            if (_camera != null)
-            {
-                CameraFeature f = _camera.GetFeature(featureType);
-                if (f.IsAvailable)
-                    return f.MinValue;
-            }
+            CameraFeature f = _camera.GetFeature(featureType);
+            if (f.IsAvailable)
+                return f.MinValue;
             return defValue ?? 0;
         }
 
-        public dynamic GetValueMax(FeatureType featureType, dynamic defValue = null)
+        public dynamic GetFeatureValueMax(FeatureType featureType, dynamic defValue = null)
         {
-            if (_camera != null)
-            {
-                CameraFeature f = _camera.GetFeature(featureType);
-                if(f.IsAvailable)
-                    return f.MaxValue;
-            }
+            CameraFeature f = _camera.GetFeature(featureType);
+            if (f.IsAvailable)
+                return f.MaxValue;
             return defValue ?? 1;
         }
 
         public double Exposure
         {
-            get => GetValue(FeatureType.Exposure);
-            set => SetValue(FeatureType.Exposure, value);
+            get => GetFeatureValue(FeatureType.Exposure);
+            set => SetFeatureValue(FeatureType.Exposure, value);
         }
 
         public double ExposureMin
         {
-            get => GetValueMin(FeatureType.Exposure);
+            get => GetFeatureValueMin(FeatureType.Exposure);
         }
 
         public double ExposureMax
         {
-            get => GetValueMax(FeatureType.Exposure);
+            get => GetFeatureValueMax(FeatureType.Exposure);
         }
 
+        public bool ExposureAuto
+        {
+            set
+            {
+                _camera.Exposure.Auto = value;
+                OnPropertyChanged();
+            }
+            get
+            {
+                return _camera.Exposure.Auto;
+            }
+        }
 
         public double Gain
         {
-            get => GetValue(FeatureType.Gain);
-            set => SetValue(FeatureType.Gain, value);
+            get => GetFeatureValue(FeatureType.Gain);
+            set => SetFeatureValue(FeatureType.Gain, value);
         }
 
         public double GainMin
         {
-            get => GetValueMin(FeatureType.Gain);
+            get => GetFeatureValueMin(FeatureType.Gain);
         }
 
         public double GainMax
         {
-            get => GetValueMax(FeatureType.Gain);
+            get => GetFeatureValueMax(FeatureType.Gain);
         }
 
+        public bool GainAuto
+        {
+            set
+            {
+                _camera.Gain.Auto = value;
+                OnPropertyChanged();
+            }
+            get
+            {
+                return _camera.Gain.Auto;
+            }
+        }
 
         public double Gamma
         {
-            get => GetValue(FeatureType.Gamma);
-            set => SetValue(FeatureType.Gamma, value);
+            get => GetFeatureValue(FeatureType.Gamma);
+            set => SetFeatureValue(FeatureType.Gamma, value);
         }
 
         public double GammaMin
         {
-            get => GetValueMin(FeatureType.Gamma);
+            get => GetFeatureValueMin(FeatureType.Gamma);
         }
 
         public double GammaMax
         {
-            get => GetValueMax(FeatureType.Gamma);
+            get => GetFeatureValueMax(FeatureType.Gamma);
         }
-
 
         public double Width
         {
-            get => GetValue(FeatureType.Width);
-            set => SetValue(FeatureType.Width, value);
+            get => GetFeatureValue(FeatureType.Width);
+            set => SetFeatureValue(FeatureType.Width, value);
         }
 
         public double WidthMin
         {
-            get => GetValueMin(FeatureType.Width);
+            get => GetFeatureValueMin(FeatureType.Width);
         }
 
         public double WidthMax
         {
-            get => GetValueMax(FeatureType.Width);
+            get => GetFeatureValueMax(FeatureType.Width);
         }
 
 
         public double Height
         {
-            get => GetValue(FeatureType.Height);
-            set => SetValue(FeatureType.Height, value);
+            get => GetFeatureValue(FeatureType.Height);
+            set => SetFeatureValue(FeatureType.Height, value);
         }
 
         public double HeightMin
         {
-            get => GetValueMin(FeatureType.Height);
+            get => GetFeatureValueMin(FeatureType.Height);
         }
 
         public double HeightMax
         {
-            get => GetValueMax(FeatureType.Height);
+            get => GetFeatureValueMax(FeatureType.Height);
         }
 
 
         public double OffsetX
         {
-            get => GetValue(FeatureType.OffsetX);
-            set => SetValue(FeatureType.OffsetX, value);
+            get => GetFeatureValue(FeatureType.OffsetX);
+            set => SetFeatureValue(FeatureType.OffsetX, value);
         }
 
         public double OffsetXMin
         {
-            get => GetValueMin(FeatureType.OffsetX);
+            get => GetFeatureValueMin(FeatureType.OffsetX);
         }
 
         public double OffsetXMax
         {
-            get => GetValueMax(FeatureType.OffsetX);
+            get => GetFeatureValueMax(FeatureType.OffsetX);
         }
 
 
         public double OffsetY
         {
-            get => GetValue(FeatureType.OffsetY);
-            set => SetValue(FeatureType.OffsetY, value);
+            get => GetFeatureValue(FeatureType.OffsetY);
+            set => SetFeatureValue(FeatureType.OffsetY, value);
         }
 
         public double OffsetYMin
         {
-            get => GetValueMin(FeatureType.OffsetY);
+            get => GetFeatureValueMin(FeatureType.OffsetY);
         }
 
         public double OffsetYMax
         {
-            get => GetValueMax(FeatureType.OffsetY);
+            get => GetFeatureValueMax(FeatureType.OffsetY);
         }
 
 
         public double BinningX
         {
-            get => GetValue(FeatureType.BinningX);
-            set => SetValue(FeatureType.BinningX, value);
+            get => GetFeatureValue(FeatureType.BinningX);
+            set => SetFeatureValue(FeatureType.BinningX, value);
         }
 
         public double BinningXMin
         {
-            get => GetValueMin(FeatureType.BinningX);
+            get => GetFeatureValueMin(FeatureType.BinningX);
         }
 
         public double BinningXMax
         {
-            get => GetValueMax(FeatureType.BinningX);
+            get => GetFeatureValueMax(FeatureType.BinningX);
         }
 
 
         public double BinningY
         {
-            get => GetValue(FeatureType.BinningY);
-            set => SetValue(FeatureType.BinningY, value);
+            get => GetFeatureValue(FeatureType.BinningY);
+            set => SetFeatureValue(FeatureType.BinningY, value);
         }
 
         public double BinningYMin
         {
-            get => GetValueMin(FeatureType.BinningY);
+            get => GetFeatureValueMin(FeatureType.BinningY);
         }
 
         public double BinningYMax
         {
-            get => GetValueMax(FeatureType.BinningY);
+            get => GetFeatureValueMax(FeatureType.BinningY);
         }
 
 
         public double BlackLevel
         {
-            get => GetValue(FeatureType.BlackLevel);
-            set => SetValue(FeatureType.BlackLevel, value);
+            get => GetFeatureValue(FeatureType.BlackLevel);
+            set => SetFeatureValue(FeatureType.BlackLevel, value);
         }
 
         public double BlackLevelMin
         {
-            get => GetValueMin(FeatureType.BlackLevel);
+            get => GetFeatureValueMin(FeatureType.BlackLevel);
         }
 
         public double BlackLevelMax
         {
-            get => GetValueMax(FeatureType.BlackLevel);
+            get => GetFeatureValueMax(FeatureType.BlackLevel);
         }
+
+        private bool subscribed = false;
+
+        private void SubscribeEvents()
+        {
+            if (subscribed)
+                return;
+            
+            subscribed = true;
+            if (_camera.Exposure.IsAvailable)
+            {
+                _camera.Exposure.OnFeatureChanged += FeatureChanged;
+            }
+            if (_camera.Gain.IsAvailable)
+            {
+                _camera.Gain.OnFeatureChanged += FeatureChanged;
+            }
+            if (_camera.Gamma.IsAvailable)
+            {
+                _camera.Gamma.OnFeatureChanged += FeatureChanged;
+            }
+            if (_camera.Width.IsAvailable)
+            {
+                _camera.Width.OnFeatureChanged += FeatureChanged;
+            }
+            if (_camera.Height.IsAvailable)
+            {
+                _camera.Height.OnFeatureChanged += FeatureChanged;
+            }
+            if (_camera.OffsetX.IsAvailable)
+            {
+                _camera.OffsetX.OnFeatureChanged += FeatureChanged;
+            }
+            if (_camera.OffsetY.IsAvailable)
+            {
+                _camera.OffsetY.OnFeatureChanged += FeatureChanged;
+            }
+            if (_camera.BinningX.IsAvailable)
+            {
+                _camera.BinningX.OnFeatureChanged += FeatureChanged;
+            }
+            if (_camera.BinningY.IsAvailable)
+            {
+                _camera.BinningY.OnFeatureChanged += FeatureChanged;
+            }
+            if (_camera.StatFrameRate.IsAvailable)
+                _camera.StatFrameRate.OnFeatureChanged += FeatureChanged;
+        }
+
+        public double FrameRate
+        {
+            get => GetFeatureValue(FeatureType.FrameRate, -1);
+        }
+
+        private void FeatureChanged(FeatureType featureType)
+        {
+            string featureName = Enum.GetName(typeof(FeatureType), featureType);
+            switch (featureType)
+            {
+                case FeatureType.Exposure:
+                case FeatureType.Gain:
+                case FeatureType.Gamma:
+                case FeatureType.BlackLevel:
+                case FeatureType.Width:
+                case FeatureType.Height:
+                case FeatureType.OffsetX:
+                case FeatureType.OffsetY:
+                case FeatureType.BinningX:
+                case FeatureType.BinningY:
+                    OnPropertyChanged(featureName);
+                    OnPropertyChanged(featureName+"Max");
+                    OnPropertyChanged(featureName+"Min");
+                    break;
+                case FeatureType.FrameRate:
+                    OnPropertyChanged("FrameRate");
+                    break;
+            }
+            switch(featureType)
+            {
+                case FeatureType.Exposure:
+                case FeatureType.Gain:
+                    OnPropertyChanged(featureName+"Auto");
+                    break;
+            }
+        }
+
+        private void UpdateAllCameraFeatures()
+        {
+            string[] names = Enum.GetNames(typeof(FeatureType));
+                
+            for(int i = 0; i < names.Length; i++)
+            {
+                OnPropertyChanged(names[i]);
+            }
+        }
+
+        private void UnsubscribeEvents()
+        {
+            if (!subscribed)
+                return;
+
+            subscribed = false;
+            if (_camera.Exposure.IsAvailable)
+            {
+                _camera.Exposure.OnFeatureChanged -= FeatureChanged;
+            }
+            if (_camera.Gain.IsAvailable)
+            {
+                _camera.Gain.OnFeatureChanged -= FeatureChanged;
+            }
+            if (_camera.Gamma.IsAvailable)
+            {
+                _camera.Gamma.OnFeatureChanged -= FeatureChanged;
+            }
+            if (_camera.Width.IsAvailable)
+            {
+                _camera.Width.OnFeatureChanged -= FeatureChanged;
+            }
+            if (_camera.Height.IsAvailable)
+            {
+                _camera.Height.OnFeatureChanged -= FeatureChanged;
+            }
+            if (_camera.OffsetX.IsAvailable)
+            {
+                _camera.OffsetX.OnFeatureChanged -= FeatureChanged;
+            }
+            if (_camera.OffsetY.IsAvailable)
+            {
+                _camera.OffsetY.OnFeatureChanged -= FeatureChanged;
+            }
+            if (_camera.BinningX.IsAvailable)
+            {
+                _camera.BinningX.OnFeatureChanged -= FeatureChanged;
+            }
+            if (_camera.BinningY.IsAvailable)
+            {
+                _camera.BinningY.OnFeatureChanged -= FeatureChanged;
+            }
+            if (_camera.StatFrameRate.IsAvailable)
+                _camera.StatFrameRate.OnFeatureChanged -= FeatureChanged;
+        }
+
 
         #endregion
 

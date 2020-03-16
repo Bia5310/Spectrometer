@@ -122,8 +122,13 @@ namespace VimbaCameraNET
         public delegate void OnAccusitionChangedHandler(bool accusition);
         /// <summary>Вызывается при изменении Accusition</summary>
         public event OnAccusitionChangedHandler OnAccusitionChanged = null;
-
+        
+        /// <summary>Вызывается при изменении Property</summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public delegate void OnCameraConnectionStateChangedHandler(bool connected);
+        /// <summary>Вызывается при подключении/отключении камеры</summary>
+        public event OnCameraConnectionStateChangedHandler OnCameraConnectionStateChanged = null;
 
         #endregion
 
@@ -377,6 +382,11 @@ namespace VimbaCameraNET
                 {
                     LogWrite(exc.Message);
                 }
+                finally
+                {
+                    if(m_Camera != null)
+                        OnCameraConnectionStateChanged?.Invoke(true);
+                }
             }
         }
 
@@ -410,6 +420,9 @@ namespace VimbaCameraNET
 
                 m_Camera = null;
             }
+
+            if (m_Camera == null)
+                OnCameraConnectionStateChanged?.Invoke(false);
         }
 
         private void InitFeatures()

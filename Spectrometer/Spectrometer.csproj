@@ -108,7 +108,7 @@
     <Compile Include="ApplicationViewModel.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Functions.cs" />
-    <Compile Include="MainWindow2.cs" />
+    <Compile Include="LogarithmConverter.cs" />
     <Compile Include="ROIControl.xaml.cs">
       <DependentUpon>ROIControl.xaml</DependentUpon>
     </Compile>

@@ -34,6 +34,8 @@ namespace Spectrometer
         public delegate void ValueChangedHandler(object sender);
         public event ValueChangedHandler ValueChanged;
 
+        private Binding sliderBinding = null;
+
         static ValueControl()
         {
             FeatureNameProperty = DependencyProperty.Register("FeatureName", typeof(string), typeof(ValueControl), new FrameworkPropertyMetadata("Name",
@@ -43,7 +45,7 @@ namespace Spectrometer
             UnitsProperty = DependencyProperty.Register("Units", typeof(string), typeof(ValueControl), new FrameworkPropertyMetadata(String.Empty,
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
             ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(ValueControl), new FrameworkPropertyMetadata(1d,
-                        FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnValueChanged));
+                        FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
             MaxValueProperty = DependencyProperty.Register("MaxValue", typeof(double), typeof(ValueControl), new FrameworkPropertyMetadata(100d,
                         FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
             MinValueProperty = DependencyProperty.Register("MinValue", typeof(double), typeof(ValueControl), new FrameworkPropertyMetadata(1d,
@@ -58,6 +60,7 @@ namespace Spectrometer
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender, OnLogarithmChanged));
         }
 
+
         private static void OnIsAutoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ValueControl control = d as ValueControl;
@@ -67,18 +70,38 @@ namespace Spectrometer
 
         private static void OnLogarithmChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if((d as ValueControl).IsInitialized)
-            {
-                OnMaxValueChanged(d, e);
-                OnMinValueChanged(d, e);
-                OnValueChanged(d, e);
-            }
+            ValueControl control = d as ValueControl;
+
+            Binding sliderBinding = new Binding("Value");
+            sliderBinding.Mode = BindingMode.TwoWay;
+            //sliderBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            sliderBinding.ElementName = "UserControl";
+            sliderBinding.Converter = new LogarithmConverter();
+            sliderBinding.ConverterParameter = control.IsLogarithm;
+            control.slider.SetBinding(Slider.ValueProperty, sliderBinding);
+
+            Binding sliderBindingMin = new Binding("MinValue");
+            sliderBindingMin.Mode = BindingMode.TwoWay;
+            //sliderBindingMin.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            sliderBindingMin.ElementName = "UserControl";
+            sliderBindingMin.Converter = new LogarithmConverter();
+            sliderBindingMin.ConverterParameter = control.IsLogarithm;
+            control.slider.SetBinding(Slider.MinimumProperty, sliderBindingMin);
+
+            Binding sliderBindingMax = new Binding("MaxValue");
+            sliderBindingMax.Mode = BindingMode.TwoWay;
+            //sliderBindingMax.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            sliderBindingMax.ElementName = "UserControl";
+            sliderBindingMax.Converter = new LogarithmConverter();
+            sliderBindingMax.ConverterParameter = control.IsLogarithm;
+            control.slider.SetBinding(Slider.MaximumProperty, sliderBindingMax);
         }
 
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ValueControl control = d as ValueControl;
-            if(control.IsInitialized)
+            
+            /*if(control.IsInitialized)
             {
                 control.slider.ValueChanged -= control.slider_ValueChanged;
                 if (control.IsLogarithm)
@@ -91,7 +114,7 @@ namespace Spectrometer
                 }
                 control.slider.ValueChanged += control.slider_ValueChanged;
             }
-
+            */
             control.ValueChanged?.Invoke(control);
         }
 
@@ -193,18 +216,29 @@ namespace Spectrometer
         public ValueControl()
         {
             InitializeComponent();
-        }
+            Binding sliderBinding = new Binding("Value");
+            sliderBinding.Mode = BindingMode.TwoWay;
+            //sliderBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            sliderBinding.ElementName = "UserControl";
+            sliderBinding.Converter = new LogarithmConverter();
+            sliderBinding.ConverterParameter = false;
+            slider.SetBinding(Slider.ValueProperty, sliderBinding);
 
-        private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if(IsLogarithm)
-            {
-                Value = Math.Pow(10, slider.Value);
-            }
-            else
-            {
-                Value = slider.Value;
-            }
+            Binding sliderBindingMin = new Binding("MinValue");
+            sliderBindingMin.Mode = BindingMode.TwoWay;
+            //sliderBindingMin.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            sliderBindingMin.ElementName = "UserControl";
+            sliderBindingMin.Converter = new LogarithmConverter();
+            sliderBindingMin.ConverterParameter = false;
+            slider.SetBinding(Slider.MinimumProperty, sliderBindingMin);
+
+            Binding sliderBindingMax = new Binding("MaxValue");
+            sliderBindingMax.Mode = BindingMode.TwoWay;
+            //sliderBindingMax.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            sliderBindingMax.ElementName = "UserControl";
+            sliderBindingMax.Converter = new LogarithmConverter();
+            sliderBindingMax.ConverterParameter = false;
+            slider.SetBinding(Slider.MaximumProperty, sliderBindingMax);
         }
     }
 }
