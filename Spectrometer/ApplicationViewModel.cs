@@ -9,6 +9,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 using VimbaCameraNET;
 using static AO_Lib.AO_Devices;
 using static VimbaCameraNET.VimbaCamera;
@@ -23,6 +25,7 @@ namespace Spectrometer
         public ApplicationViewModel()
         {
             _camera = new VimbaCamera();
+            _camera.FrameReceivedHandler = Camera_FrameReceived;
             VimbaCamera.OnCameraListChanged += VimbaCamera_OnCameraListChanged;
         }
 
@@ -30,6 +33,53 @@ namespace Spectrometer
         {
             DisconnectCamera();
             _camera = null;
+        }
+
+        public WriteableBitmap writeableBitmap = null;
+        public WriteableBitmap WriteableBitmap
+        {
+            get => writeableBitmap;
+        }
+
+        private void Camera_FrameReceived(VimbaCamera vCamera, Frame frame)
+        {
+            
+        }
+
+        public ClickCommand TestImageTriggerCommand
+        {
+            get
+            {
+                return new ClickCommand(o =>
+                {
+                    
+                    if(writeableBitmap == null || writeableBitmap.Width != 100 && writeableBitmap.Height != 300)
+                    {
+                        writeableBitmap = new WriteableBitmap(100, 300, 96, 96, PixelFormats.Bgr32, null);
+                    }
+                    writeableBitmap.Lock();
+                    byte value = (byte)(DateTime.Now.Second * 255 / 60);
+                    
+                    unsafe
+                    {
+                        IntPtr ptr = writeableBitmap.BackBuffer;
+                        for(int i = 0; i < 300; i++)
+                        {
+                            for(int j = 0; j < 100; j++)
+                            {
+                                ((byte*)ptr)[0] = value;
+                                ((byte*)ptr)[1] = value;
+                                ((byte*)ptr)[2] = value;
+                                ptr += 4;
+                            }
+                        }
+                    }
+                    writeableBitmap.AddDirtyRect(new Int32Rect(0,0,(int)writeableBitmap.Width,(int)writeableBitmap.Height));
+                    writeableBitmap.Unlock();
+
+                    OnPropertyChanged("WriteableBitmap");
+                });
+            }
         }
 
         #region CameraRegion
@@ -441,6 +491,7 @@ namespace Spectrometer
             }
             if (_camera.StatFrameRate.IsAvailable)
                 _camera.StatFrameRate.OnFeatureChanged += FeatureChanged;
+            
         }
 
         public double FrameRate
@@ -539,6 +590,7 @@ namespace Spectrometer
 
         #endregion
 
+        
 
     }
 }

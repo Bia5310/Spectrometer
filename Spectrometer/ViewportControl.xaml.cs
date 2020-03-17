@@ -31,8 +31,6 @@ namespace Spectrometer
         {
             base.OnRenderSizeChanged(sizeInfo);
             UpdateImagePosition();
-            //OnScrollXChanged(this, new DependencyPropertyChangedEventArgs());
-            //OnScrollYChanged(this, new DependencyPropertyChangedEventArgs());
         }
 
         protected override System.Windows.Size MeasureOverride(System.Windows.Size constraint)
@@ -54,8 +52,6 @@ namespace Spectrometer
         public static readonly DependencyProperty ImageHeightProperty = null;
         public static readonly DependencyProperty ImagePositionXProperty = null;
         public static readonly DependencyProperty ImagePositionYProperty = null;
-
-        private static WriteableBitmap writeableBitmap = null;
 
         public double ImagePositionX
         {
@@ -87,14 +83,9 @@ namespace Spectrometer
             set => SetValue(ImageProperty, value);
         }
 
-        public void DrawImage(Bitmap bitmap)
-        {
-            
-        }
-
         public void UpdateImagePosition()
         {
-            if(true)
+            if (Image != null)
             {
                 ImageWidth = Zoom * image.Source.Width;
                 ImageHeight = Zoom * image.Source.Height;
@@ -103,11 +94,11 @@ namespace Spectrometer
             }
         }
 
-        public WriteableBitmap WriteableBitmap
+        /*public WriteableBitmap WriteableBitmap
         {
             get => (WriteableBitmap)GetValue(ImageProperty);
             set => SetValue(ImageProperty, value);
-        }
+        }*/
 
         public double ScrollX
         {

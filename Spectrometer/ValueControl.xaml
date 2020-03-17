@@ -31,6 +31,10 @@
                         Foreground="{DynamicResource Brush_Foreground}" Text="{Binding Path=FeatureName, ElementName=UserControl}"/>
 
             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <ToggleButton x:Name="ToggleButton_Auto" Content="Auto" Margin="1" Width="60" FontSize="12" VerticalContentAlignment="Center"
+                      Visibility="{Binding Path=AutoVisibility, ElementName=UserControl}" Grid.Column="1" IsChecked="{Binding ElementName=UserControl, Path=IsAuto}"
+                          Style="{DynamicResource ToggleButton_AutoStyle}">
+                </ToggleButton>
                 <xctk:DoubleUpDown MinWidth="90" Margin="2" VerticalAlignment="Center" Name="doubleUpDown"
                                    Style="{DynamicResource NUD_Style}" Value="{Binding Path=Value, ElementName=UserControl}"
                                    Maximum="{Binding Path=MaxValue, ElementName=UserControl}" Minimum="{Binding Path=MinValue, ElementName=UserControl}"
@@ -52,10 +56,7 @@
             
             <TextBlock HorizontalAlignment="Left" Margin="2" VerticalAlignment="Top" Grid.Column="0"
                         Foreground="{DynamicResource Brush_Foreground}" FontSize="12" Text="{Binding Path=MinValue, ElementName=UserControl}"/>
-            <ToggleButton x:Name="ToggleButton_Auto" Content="Auto" Margin="1" Width="60" FontSize="12" VerticalContentAlignment="Center"
-                      Visibility="{Binding Path=AutoVisibility, ElementName=UserControl}" Grid.Column="1" IsChecked="{Binding ElementName=UserControl, Path=IsAuto}"
-                          Style="{DynamicResource ToggleButton_AutoStyle}">
-            </ToggleButton>
+
             <TextBlock HorizontalAlignment="Right" Margin="2" Grid.Column="2" VerticalAlignment="Top"
                         Foreground="{DynamicResource Brush_Foreground}" FontSize="12" Text="{Binding Path=MaxValue, ElementName=UserControl}"/>
         </Grid>

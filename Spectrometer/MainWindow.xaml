@@ -14,6 +14,17 @@
         Name="mainForm"
         Title="MainWindow" Height="1180" Width="1500" Background="{DynamicResource Brush_BackDark}">
     <Window.Resources>
+        <Style TargetType="StackPanel" x:Key="hideableStackPanel">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=checkBox_CorrectsWhenCapture, Path=IsChecked}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=checkBox_CorrectsWhenCapture, Path=IsChecked}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <local:LogarithmConverter x:Key="logarithmConverter"/>
 
         <Style TargetType="ScrollBar">
@@ -71,7 +82,8 @@
                     <RowDefinition Height="190"/>
                 </Grid.RowDefinitions>
 
-                <local:ViewportControl Grid.Column="1" Grid.Row="0" x:Name="viewportControl1" Zoom="1">
+                <local:ViewportControl Grid.Column="1" Grid.Row="0" x:Name="viewportControl1" Zoom="1"
+                                       Image="{Binding WriteableBitmap, UpdateSourceTrigger=PropertyChanged}">
                     
                 </local:ViewportControl>
                 
@@ -94,7 +106,7 @@
                     </Button>
                 </StackPanel>
 
-                <ScrollViewer  FontSize="16" Margin="4 0 4 0" Grid.Row="0" Grid.Column="3" VerticalScrollBarVisibility="Auto" Background="{DynamicResource Brush_BackSide}">
+                <ScrollViewer  FontSize="13" Margin="4 0 4 0" Grid.Row="0" Grid.Column="3" VerticalScrollBarVisibility="Auto" Background="{DynamicResource Brush_BackSide}">
                     <StackPanel Orientation="Vertical">
                         <TabControl Style="{DynamicResource TabControlStyle}" Margin="0 4 0 4">
                             <TabItem Header="Серия">
@@ -119,7 +131,8 @@
                                         <xctk:DoubleUpDown Margin="2" Grid.Row="1" Grid.Column="1" Style="{DynamicResource NUD_Style}"/>
                                         <xctk:DoubleUpDown Margin="2" Grid.Row="1" Grid.Column="2" Style="{DynamicResource NUD_Style}"/>
 
-                                        <Button Margin="2" Grid.Row="1" Grid.Column="3" Content="Захват" Style="{DynamicResource ButtonSimpleStyle}"/>
+                                        <Button Margin="2" Grid.Row="1" Grid.Column="3" Content="Захват" Style="{DynamicResource ButtonSimpleStyle}"
+                                                Command="{Binding TestImageTriggerCommand}"/>
                                     </Grid>
 
                                     <Grid Margin="0 5 0 5">
@@ -136,42 +149,55 @@
 
                                     <Border Margin="3 2 5 2" CornerRadius="1" BorderThickness="2" BorderBrush="{DynamicResource Brush_BackSide}"/>
 
-                                    <CheckBox VerticalContentAlignment="Center" Content="Корректировка при захвате" Foreground="{DynamicResource Brush_Foreground}" Margin="5 5 2 5"/>
+                                    <CheckBox VerticalContentAlignment="Center" Content="Корректировка при захвате" Foreground="{DynamicResource Brush_Foreground}" Margin="5 5 2 5"
+                                              Name="checkBox_CorrectsWhenCapture" IsChecked="True"/>
 
-                                    <Grid Margin="2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                    <StackPanel Style="{DynamicResource hideableStackPanel}">
+                                        <Grid Margin="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
 
-                                        <Button Grid.Column="0" Margin="2" Style="{DynamicResource ButtonSimpleStyle}">
-                                            <Image Source="Assets/Folder.png" Width="18" Height="18"/>
-                                        </Button>
-                                        <TextBox Grid.Column="1" Margin="2" Style="{DynamicResource TextBoxStyle}"/>
-                                    </Grid>
+                                            <Button Grid.Column="0" Margin="2" Style="{DynamicResource ButtonSimpleStyle}">
+                                                <Image Source="Assets/Folder.png" Width="18" Height="18"/>
+                                            </Button>
+                                            <TextBox Grid.Column="1" Margin="2" Style="{DynamicResource TextBoxStyle}"/>
+                                        </Grid>
 
-                                    <StackPanel Orientation="Horizontal" Margin="2">
-                                        <TextBlock Text="При экспозиции" Margin="2"/>
-                                        <xctk:DoubleUpDown MinWidth="80" Margin="2" Style="{DynamicResource NUD_Style}"/>
-                                    </StackPanel>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="1*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
 
-                                    <StackPanel Orientation="Horizontal" Margin="2">
-                                        <TextBlock Text="Коррекция:" Margin="2" VerticalAlignment="Center"/>
-                                        <CheckBox Content="Экспозицией" Margin="4" Foreground="{DynamicResource Brush_Foreground}" VerticalAlignment="Center"
+                                            <TextBlock Text="При экспозиции" Margin="2" Grid.Column="0" Grid.Row="0"/>
+                                            <xctk:DoubleUpDown MinWidth="80" Margin="2" Style="{DynamicResource NUD_Style}"
+                                                               Grid.Column="1" Grid.Row="0"/>
+                                            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" Margin="2">
+                                                <TextBlock Text="Коррекция:" Margin="2" VerticalAlignment="Center"/>
+                                                <CheckBox Content="Экспозицией" Margin="4" Foreground="{DynamicResource Brush_Foreground}" VerticalAlignment="Center"
                                                    VerticalContentAlignment="Center"/>
-                                        <CheckBox Content="Усилением" Margin="4" Foreground="{DynamicResource Brush_Foreground}" VerticalAlignment="Center"
+                                                <CheckBox Content="Усилением" Margin="4" Foreground="{DynamicResource Brush_Foreground}" VerticalAlignment="Center"
                                                    VerticalContentAlignment="Center"/>
-                                    </StackPanel>
+                                            </StackPanel>
 
-                                    <StackPanel Orientation="Horizontal" Margin="2">
-                                        <TextBlock Text="Макс. экспозиция" Margin="2"/>
-                                        <xctk:DoubleUpDown MinWidth="80" Margin="2" Style="{DynamicResource NUD_Style}"/>
-                                    </StackPanel>
+                                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Макс. экспозиция" Margin="2"/>
+                                            <xctk:DoubleUpDown Grid.Row="2" Grid.Column="1" MinWidth="80" Margin="2" Style="{DynamicResource NUD_Style}"/>
+                                            
+                                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Макс. усиление" Margin="2"/>
+                                            <xctk:DoubleUpDown Grid.Row="3" Grid.Column="1" MinWidth="80" Margin="2" Style="{DynamicResource NUD_Style}"/>
 
-                                    <StackPanel Orientation="Horizontal" Margin="2">
-                                        <TextBlock Text="Макс. усиление" Margin="2"/>
-                                        <xctk:DoubleUpDown MinWidth="80" Margin="2" Style="{DynamicResource NUD_Style}"/>
+                                        </Grid>
+
                                     </StackPanel>
+                                    
                                 </StackPanel>
                             </TabItem>
                             <TabItem Header="Свип">

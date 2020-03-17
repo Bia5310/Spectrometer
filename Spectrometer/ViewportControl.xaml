@@ -23,7 +23,7 @@
                    Canvas.Top="{Binding ElementName=viewport, Path=ImagePositionY}"
                    Width="{Binding ElementName=viewport, Path=ImageWidth}"
                    Height="{Binding ElementName=viewport, Path=ImageHeight}"
-                   Source="{Binding ElementName=viewport, Path=Image}"/>
+                   Source="{Binding ElementName=viewport, Path=Image, UpdateSourceTrigger=PropertyChanged}"/>
         </Canvas>
 
         <ScrollBar Minimum="-1" Maximum="1" Grid.Column="1" Grid.Row="0" Name="scrollBarY" ValueChanged="scrollBarY_ValueChanged" Orientation="Vertical"
