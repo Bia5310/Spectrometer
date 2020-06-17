@@ -49,6 +49,12 @@
     <Reference Include="Accord.Video.FFMPEG, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=x86">
       <HintPath>..\packages\Accord.Video.FFMPEG.3.8.0\lib\net46\Accord.Video.FFMPEG.dll</HintPath>
     </Reference>
+    <Reference Include="AvalonDock, Version=4.10.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dirkster.AvalonDock.4.10.0\lib\net40\AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="AvalonDock.Themes.VS2013, Version=4.10.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dirkster.AvalonDock.Themes.VS2013.4.10.0\lib\net40\AvalonDock.Themes.VS2013.dll</HintPath>
+    </Reference>
     <Reference Include="BitMiracle.LibTiff.NET, Version=2.4.638.0, Culture=neutral, PublicKeyToken=53879b3e20e7a7d6, processorArchitecture=MSIL">
       <HintPath>..\packages\BitMiracle.LibTiff.NET.2.4.638\lib\net40\BitMiracle.LibTiff.NET.dll</HintPath>
     </Reference>
@@ -84,9 +90,6 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=3.6.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.3.6.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
-    </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=3.6.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
       <HintPath>..\packages\Extended.Wpf.Toolkit.3.6.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
     </Reference>
@@ -105,11 +108,28 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ApplicationViewModel.cs" />
-    <Compile Include="Commands.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Converters\ConverterBoolToVisibility.cs" />
+    <Compile Include="Converters\ConverterFeatureRangeText.cs" />
+    <Compile Include="Converters\ConverterImageToViewportSize.cs" />
+    <Compile Include="Converters\ConverterNullToEnabled.cs" />
+    <Compile Include="Converters\ConverterNullVisibility.cs" />
+    <Compile Include="Converters\ConverterPowerButtonText.cs" />
+    <Compile Include="Converters\ConverterResizeValue.cs" />
+    <Compile Include="Converters\ConverterWavelengthToWavenumber.cs" />
+    <Compile Include="Themes\DarkTheme.cs" />
+    <Compile Include="UserControls\CameraControlsGroup.xaml.cs">
+      <DependentUpon>CameraControlsGroup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\ConverterIntToDouble.cs" />
+    <Compile Include="UserControls\FeatureControl.xaml.cs">
+      <DependentUpon>FeatureControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\ApplicationViewModel.cs" />
     <Compile Include="Functions.cs" />
-    <Compile Include="LogarithmConverter.cs" />
-    <Compile Include="ROIControl.xaml.cs">
+    <Compile Include="LayoutInitializer.cs" />
+    <Compile Include="Converters\LogarithmConverter.cs" />
+    <Compile Include="UserControls\ROIControl.xaml.cs">
       <DependentUpon>ROIControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Polarisation.cs" />
@@ -118,9 +138,12 @@
     <Compile Include="ValueControl.xaml.cs">
       <DependentUpon>ValueControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewportControl.xaml.cs">
+    <Compile Include="UserControls\ViewportControl.xaml.cs">
       <DependentUpon>ViewportControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\CameraViewModel.cs" />
+    <Compile Include="ViewModels\FilterViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -133,11 +156,27 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ROIControl.xaml">
+    <Page Include="Themes\DarkBrushs.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\DarkTheme.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\CameraControlsGroup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Theme1.xaml">
+    <Page Include="UserControls\FeatureControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\ROIControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Theme1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -145,7 +184,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewportControl.xaml">
+    <Page Include="UserControls\ViewportControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -185,7 +224,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AO_Lib\AO_Lib.csproj">
+    <ProjectReference Include="..\..\AO_Lib\AO_Lib.csproj">
       <Project>{1eb39a18-8a1c-4c19-af0b-39809ad6606f}</Project>
       <Name>AO_Lib</Name>
     </ProjectReference>
@@ -217,6 +256,7 @@
   <ItemGroup>
     <Resource Include="Assets\Settings.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.8.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.0\build\Accord.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

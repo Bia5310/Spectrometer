@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AVT.VmbAPINET;
@@ -11,8 +13,16 @@ namespace VimbaCameraNET
     {
         public enum FeatureType : int { None = 0, Exposure, Gain, Gamma, Width, Height, OffsetX, OffsetY, BinningX, BinningY, FrameRate, BlackLevel, AcquisitionFrameRateLimit };
 
-        public abstract class CameraFeature
+        public abstract class CameraFeature : INotifyPropertyChanged
         {
+            public void OnPropertyChanged([CallerMemberName]string prop = "")
+            {
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
             /// <summary>Тип фичи. Exposure, Gain, Gamma...</summary>
             public abstract FeatureType FeatureType{ get; }
             /// <summary>Имя фичи</summary>
@@ -35,6 +45,7 @@ namespace VimbaCameraNET
             /// <summary>Вызывается, если какое-то свойство фичи изменилось</summary>
             public virtual event OnFeatureChangedHandler OnFeatureChanged;
 
+
             private dynamic featureValue = 0;
             public dynamic Value
             {
@@ -44,6 +55,10 @@ namespace VimbaCameraNET
                     {
                         if (f_Feature == null)
                             return;
+
+                        dynamic oldValue = featureValue;
+                        /*if (oldValue == value)
+                            return;*/
 
                         //fit to increment
                         dynamic val = value;
@@ -61,6 +76,8 @@ namespace VimbaCameraNET
                                 featureValue = f_Feature.IntValue;
                                 break;
                         }
+
+                        OnPropertyChanged();
                     }
                     catch (Exception ex)
                     {
@@ -141,7 +158,6 @@ namespace VimbaCameraNET
                             minValue = f_Feature.IntRangeMin;
                             featureValueIncrement = f_Feature.IntIncrement;
                             hasValueIncrement = true;
-                            
                             break;
                         case VmbFeatureDataType.VmbFeatureDataFloat:
                             featureValue = f_Feature.FloatValue;
@@ -155,6 +171,10 @@ namespace VimbaCameraNET
                             break;
                     }
                     isReadonly = !f_Feature.IsWritable();
+                    OnPropertyChanged("Value");
+                    OnPropertyChanged("MaxValue");
+                    OnPropertyChanged("MinValue");
+                    OnPropertyChanged("IsAvailable");
                 }
                 catch (Exception) { }
             }
@@ -250,6 +270,8 @@ namespace VimbaCameraNET
                         }
                     }
                     catch(Exception) { }
+
+                    OnPropertyChanged();
                 }
                 get
                 {
@@ -396,6 +418,8 @@ namespace VimbaCameraNET
                         }
                     }
                     catch (Exception) { }
+
+                    OnPropertyChanged();
                 }
                 get
                 {

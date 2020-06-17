@@ -24,6 +24,7 @@ namespace Spectrometer
         public const TiffTag TIFFTAG_BinningY_METADATA = (TiffTag)809; //Binning Y
         public const TiffTag TIFFTAG_WAVENUMBER_METADATA = (TiffTag)810; //WaveNumber (1/cm)
         public const TiffTag TIFFTAG_BITS_METADATA = (TiffTag)811; //Bits per pixel
+        public const TiffTag TIFFTAG_FREQUENCYMHZ_METADATA = (TiffTag)812; //Frequence (MHz)
 
         /// <summary>
         /// Сохраняет VimbaAPI Frame в *.Tiff файл
@@ -200,6 +201,7 @@ namespace Spectrometer
 
         public double Wavelength;
         public double Wavenumber;
+        public double Frequency = 0;
         public double Exposure;
         public double Gain;
         public double GPS;
@@ -228,6 +230,7 @@ namespace Spectrometer
                 "Timestamp: "+ Timestamp.ToString(),
                 "GPS: " + GPS.ToString("F"),
                 "Bits: " + Bits.ToString(),
+                "Wavelength: " + Wavelength.ToString(),
             };
         }
     }

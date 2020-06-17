@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using NLog;
+using Spectrometer.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,7 +30,14 @@ namespace Spectrometer
     {
         public MainWindow()
         {
+            InitializeComponent();
             DataContext = new ApplicationViewModel();
+        }
+
+        private void mainForm_Loaded(object sender, RoutedEventArgs e)
+        {
+            /*bottomGroup.DockHeight = new GridLength(250, GridUnitType.Pixel);
+            rightSideGroup.DockHeight = new GridLength(450, GridUnitType.Pixel);*/
         }
     }
 }

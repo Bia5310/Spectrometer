@@ -59,21 +59,22 @@ namespace VimbaCameraNET
             {
                 m_Accusition = value;
                 OnAccusitionChanged?.Invoke(m_Accusition);
+                OnPropertyChanged();
             }
         }
 
-        public CameraFeatureExposure Exposure = null;
-        public CameraFeatureGain Gain = null;
-        public CameraFeatureGamma Gamma = null;
-        public CameraFeatureWidth Width = null;
-        public CameraFeatureOffsetX OffsetX = null;
-        public CameraFeatureHeight Height = null;
-        public CameraFeatureOffsetY OffsetY = null;
-        public CameraFeatureBinningX BinningX = null;
-        public CameraFeatureBinningY BinningY = null;
-        public CameraFeatureFrameRate StatFrameRate = null;
-        public CameraFeatureBlackLevel BlackLevel = null;
-        public CameraFeatureAcquisitionLimit AcqisitionLimit = null;
+        public CameraFeatureExposure Exposure { get; set; }
+        public CameraFeatureGain Gain { get; set; }
+        public CameraFeatureGamma Gamma { get; set; }
+        public CameraFeatureWidth Width { get; set; }
+        public CameraFeatureOffsetX OffsetX { get; set; }
+        public CameraFeatureHeight Height { get; set; }
+        public CameraFeatureOffsetY OffsetY { get; set; }
+        public CameraFeatureBinningX BinningX { get; set; }
+        public CameraFeatureBinningY BinningY { get; set; }
+        public CameraFeatureFrameRate StatFrameRate { get; set; }
+        public CameraFeatureBlackLevel BlackLevel { get; set; }
+        public CameraFeatureAcquisitionLimit AcqisitionLimit { get; set; }
 
         public string PixelFormat
         {
@@ -384,6 +385,9 @@ namespace VimbaCameraNET
                 }
                 finally
                 {
+                    OnPropertyChanged("Camera");
+                    OnPropertyChanged("IsOpened");
+
                     if(m_Camera != null)
                         OnCameraConnectionStateChanged?.Invoke(true);
                 }
@@ -410,6 +414,9 @@ namespace VimbaCameraNET
                 try
                 {
                     m_Camera.Close();
+                    OnPropertyChanged("Camera");
+                    OnPropertyChanged("IsOpened");
+
                     cameraInfo = new CameraInfo(null);
                     LogWrite("Камера закрыта");
                 }
@@ -441,7 +448,14 @@ namespace VimbaCameraNET
                 StatFrameRate = new CameraFeatureFrameRate(m_Camera);
                 BlackLevel = new CameraFeatureBlackLevel(m_Camera);
                 AcqisitionLimit = new CameraFeatureAcquisitionLimit(m_Camera);
+
+                Exposure.OnFeatureChanged += Exposure_OnFeatureChanged;
             }
+        }
+
+        private void Exposure_OnFeatureChanged(FeatureType featureType)
+        {
+            OnPropertyChanged(Enum.GetName(typeof(FeatureType), featureType));
         }
 
         private CameraInfo cameraInfo = new CameraInfo(null);
@@ -608,7 +622,8 @@ namespace VimbaCameraNET
 
                 if (FrameReceivedHandler != null)
                     m_Camera.OnFrameReceived -= frameReceived;
-
+                
+                System.Threading.Thread.Sleep(200);
                 m_Camera.EndCapture();
                 m_Camera.FlushQueue();
                 m_Camera.RevokeAllFrames();
